@@ -1,4 +1,4 @@
-use aws_nitro_enclave_attestation_verifier::{BatchVerifierInput, BatchVerifierJournal};
+use aws_nitro_enclave_attestation_verifier::stub::{BatchVerifierInput, BatchVerifierJournal};
 use risc0_zkvm::guest::env;
 use std::io::Read;
 
@@ -10,11 +10,11 @@ fn main() {
     };
 
     for output in &input.outputs {
-        env::verify(input.verifier_vk.0.clone(), &output.encode()).unwrap();
+        env::verify(input.verifierVk.0.clone(), &output.encode()).unwrap();
     }
 
     let journal = BatchVerifierJournal {
-        verifier_vk: input.verifier_vk,
+        verifierVk: input.verifierVk,
         outputs: input.outputs,
     };
 

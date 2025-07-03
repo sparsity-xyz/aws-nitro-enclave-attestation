@@ -1,23 +1,41 @@
 use alloy_primitives::{Bytes, B256};
 use alloy_sol_types::{SolType, SolValue};
 use anyhow::anyhow;
+use aws_nitro_enclave_attestation_verifier::stub::ZkCoProcessorType;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ProveResult {
+    pub zktype: ZkCoProcessorType,
     pub zkvm: String,
     pub program_id: ProgramId,
     pub proof: Proof,
     pub onchain_proof: Bytes,
+    pub proof_type: ProofType,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub enum ProofType {
+    Verifier,
+    Aggregator,
 }
 
 impl ProveResult {
-    pub fn new(zkvm: String, program_id: ProgramId, proof: Proof, onchain_proof: Bytes) -> Self {
+    pub fn new(
+        zktype: ZkCoProcessorType,
+        zkvm: String,
+        program_id: ProgramId,
+        proof: Proof,
+        onchain_proof: Bytes,
+        proof_type: ProofType,
+    ) -> Self {
         Self {
+            zktype,
             zkvm,
             program_id,
             proof,
             onchain_proof,
+            proof_type,
         }
     }
 

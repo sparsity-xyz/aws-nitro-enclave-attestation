@@ -1,7 +1,7 @@
 #![no_main]
 sp1_zkvm::entrypoint!(main);
 
-use aws_nitro_enclave_attestation_verifier::{verify_attestation_report, VerifierInput};
+use aws_nitro_enclave_attestation_verifier::{verify_attestation_report, stub::VerifierInput};
 
 pub fn main() {
     let input = VerifierInput::decode(&sp1_zkvm::io::read_vec()).unwrap();

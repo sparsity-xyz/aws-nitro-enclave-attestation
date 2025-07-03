@@ -1,7 +1,5 @@
-//SPDX-License-Identifier: MIT
+//SPDX-License-Identifier: Apache2.0
 pragma solidity ^0.8.0;
-
-// ZK-Coprocessor imports:
 
 enum ZkCoProcessorType {
     Unknown,
@@ -9,13 +7,6 @@ enum ZkCoProcessorType {
     Succinct
 }
 
-/**
- * @title ZK Co-Processor Configuration Object
- * @param programIdentifier - This is the identifier of the ZK Program, required for
- * verification
- * @param zkVerifier - Points to the address of the ZK Verifier contract. Ideally
- * this should be pointing to a universal verifier, that may support multiple proof types and/or versions.
- */
 struct ZkCoProcessorConfig {
     bytes32 verifierId;
     bytes32 verifierProofId;
@@ -24,30 +15,29 @@ struct ZkCoProcessorConfig {
 }
 
 struct VerifierInput {
-    uint64 timestamp;
-    uint8 trusted_certs_len;
-    bytes attestation_report;
+    uint8 trustedCertsLen;
+    bytes attestationReport;
 }
 
 struct VerifierJournal {
-    uint64 verify_timestamp;
+    VerificationResult result;
+    uint8 trustedCertsLen;
+    uint64 timestamp;
     bytes32[] certs;
-    uint8 trusted_certs_len;
-    bytes user_data;
+    bytes userData;
     bytes nonce;
-    bytes public_key;
+    bytes publicKey;
     Pcr[] pcrs;
-    string module_id;
-    uint64 doc_timestamp;
+    string moduleId;
 }
 
 struct BatchVerifierInput {
-    bytes32 verifier_vk;
+    bytes32 verifierVk;
     VerifierJournal[] outputs;
 }
 
 struct BatchVerifierJournal {
-    bytes32 verifier_vk;
+    bytes32 verifierVk;
     VerifierJournal[] outputs;
 }
 
@@ -61,6 +51,27 @@ struct Pcr {
     Bytes48 value;
 }
 
-interface INitroEnclaveVerifier {
+enum VerificationResult {
+    Success,
+    RootCertNotTrusted,
+    IntermediateCertsNotTrusted,
+    InvalidTimestamp
+}
 
+interface INitroEnclaveVerifier {
+    error Unknown_Zk_Coprocessor();
+
+    function maxTimeDiff() external view returns (uint64);
+    function rootCert() external view returns (bytes32);
+
+    function revokeCert(bytes32 _certHash) external;
+    function checkTrustedIntermediateCerts(bytes32[][] calldata _report_certs) external view returns (uint8[] memory);
+    function setRootCert(bytes32 _rootCert) external;
+    function setZkConfiguration(ZkCoProcessorType _zkCoProcessor, ZkCoProcessorConfig memory _config) external;
+    function batchVerify(bytes calldata output, ZkCoProcessorType zkCoprocessor, bytes calldata proofBytes)
+        external
+        returns (VerifierJournal[] memory);
+    function verify(bytes calldata output, ZkCoProcessorType zkCoprocessor, bytes calldata proofBytes)
+        external
+        returns (VerifierJournal memory);
 }

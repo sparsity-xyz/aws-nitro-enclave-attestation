@@ -1,16 +1,16 @@
 use alloy_primitives::{Bytes, B256};
 use async_trait::async_trait;
-use aws_nitro_enclave_attestation_verifier::{BatchVerifierInput, VerifierInput, VerifierJournal};
+use aws_nitro_enclave_attestation_verifier::stub::{
+    BatchVerifierInput, VerifierInput, VerifierJournal, ZkCoProcessorType,
+};
 use bonsai_sdk::non_blocking::Client;
 use risc0_ethereum_contracts::groth16;
 use risc0_methods::{
     RISC0_AGGREGATOR_ELF, RISC0_AGGREGATOR_ID, RISC0_VERIFIER_ELF, RISC0_VERIFIER_ID,
 };
-use risc0_zkvm::{
-    default_prover, Digest, ExecutorEnv, InnerReceipt, ProverOpts, VERSION,
-};
+use risc0_zkvm::{default_prover, Digest, ExecutorEnv, InnerReceipt, ProverOpts, VERSION};
 
-use crate::{ProgramId, Proof, ProveResult, Prover, ProverConfig};
+use crate::{ProgramId, Proof, ProofType, ProveResult, Prover, ProverConfig};
 
 pub struct Risc0Prover {}
 
@@ -32,10 +32,14 @@ impl Risc0Prover {
     }
 }
 
-#[async_trait]
+#[async_trait(?Send)]
 impl Prover for Risc0Prover {
     fn zkvm_info(&self) -> String {
         format!("risc0/{}", VERSION)
+    }
+
+    fn zk_type(&self) -> ZkCoProcessorType {
+        ZkCoProcessorType::RiscZero
     }
 
     fn decode_proof(&self, proof: &Proof) -> anyhow::Result<Bytes> {
@@ -66,7 +70,7 @@ impl Prover for Risc0Prover {
         }
 
         let batch_input = BatchVerifierInput {
-            verifier_vk: B256::from_slice(Digest::new(RISC0_VERIFIER_ID).as_bytes()),
+            verifierVk: B256::from_slice(Digest::new(RISC0_VERIFIER_ID).as_bytes()),
             outputs: journals,
         };
 
@@ -79,7 +83,7 @@ impl Prover for Risc0Prover {
         let opts = ProverOpts::groth16();
 
         let proof = self.prove(env, RISC0_AGGREGATOR_ELF, &opts)?;
-        Ok(self.build_result(proof)?)
+        Ok(self.build_result(proof, ProofType::Aggregator)?)
     }
 
     fn prove_single(&self, input: &VerifierInput) -> anyhow::Result<ProveResult> {
@@ -88,7 +92,7 @@ impl Prover for Risc0Prover {
             .build()?;
         let opts = ProverOpts::groth16();
         let proof = self.prove(env, RISC0_VERIFIER_ELF, &opts)?;
-        Ok(self.build_result(proof)?)
+        Ok(self.build_result(proof, ProofType::Verifier)?)
     }
 
     async fn upload_image(&self) -> anyhow::Result<ProgramId> {
@@ -113,6 +117,6 @@ impl Prover for Risc0Prover {
             .build()?;
         let opts = ProverOpts::composite();
         let proof = self.prove(env, RISC0_VERIFIER_ELF, &opts)?;
-        Ok(self.build_result(proof)?)
+        Ok(self.build_result(proof, ProofType::Verifier)?)
     }
 }

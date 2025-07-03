@@ -7,8 +7,9 @@ use alloy_rpc_types::TransactionRequest;
 use alloy_signer_local::PrivateKeySigner;
 use alloy_sol_types::SolCall;
 use anyhow::anyhow;
+use aws_nitro_enclave_attestation_verifier::stub::{VerifierJournal, ZkCoProcessorType};
 
-use crate::ZkType;
+use crate::{ProofType, ProveResult};
 
 pub struct NitroEnclaveVerifier {
     contract: Address,
@@ -62,76 +63,82 @@ impl NitroEnclaveVerifier {
         Ok(result)
     }
 
+    pub async fn verify_proof(&self, proof: &ProveResult) -> anyhow::Result<Vec<VerifierJournal>> {
+        if proof.onchain_proof.len() == 0 {
+            return Err(anyhow!(
+                "Proof does not contain an on-chain proof, unable to verify on-chain."
+            ));
+        }
+        let journal = proof.proof.journal.clone();
+        let proof_bytes = proof.onchain_proof.clone();
+        let zk = proof.zktype;
+
+        Ok(match proof.proof_type {
+            ProofType::Verifier => {
+                vec![self.verify(zk, proof_bytes, journal).await?]
+            }
+            ProofType::Aggregator => self.batch_verify(zk, proof_bytes, journal).await?,
+        })
+    }
+
     pub async fn verify(
         &self,
-        zk: ZkType,
+        zk: ZkCoProcessorType,
         proof: Bytes,
         journal: Bytes,
-    ) -> anyhow::Result<PendingTransactionBuilder<Ethereum>> {
-        use aws_nitro_enclave_attestation_verifier::stub::*;
+    ) -> anyhow::Result<VerifierJournal> {
+        use aws_nitro_enclave_attestation_verifier::stub::INitroEnclaveVerifier::*;
         let call = verifyCall {
             output: journal,
-            zkCoprocessor: (zk as u8).into(),
+            zkCoprocessor: zk,
             proofBytes: proof,
         };
-        let result = self.transact(&call).await?;
-        Ok(result)
+        Ok(self.call(&call).await?)
     }
 
     pub async fn batch_verify(
         &self,
-        zk: ZkType,
+        zk: ZkCoProcessorType,
         proof: Bytes,
         journal: Bytes,
-    ) -> anyhow::Result<PendingTransactionBuilder<Ethereum>> {
-        use aws_nitro_enclave_attestation_verifier::stub::*;
+    ) -> anyhow::Result<Vec<VerifierJournal>> {
+        use aws_nitro_enclave_attestation_verifier::stub::INitroEnclaveVerifier::*;
         let call = batchVerifyCall {
             output: journal,
-            zkCoprocessor: (zk as u8).into(),
+            zkCoprocessor: zk,
             proofBytes: proof,
         };
-        let result = self.transact(&call).await?;
-        Ok(result)
+        Ok(self.call(&call).await?)
     }
 
     pub async fn root_cert(&self) -> anyhow::Result<B256> {
-        use aws_nitro_enclave_attestation_verifier::stub::*;
+        use aws_nitro_enclave_attestation_verifier::stub::INitroEnclaveVerifier::*;
         Ok(self.call(&rootCertCall {}).await?)
     }
 
-    pub async fn query_cert_cache(&self, certs: &[B256]) -> anyhow::Result<u8> {
-        use aws_nitro_enclave_attestation_verifier::stub::*;
-        if certs.len() > 8 {
-            return Err(anyhow!("Too many certificates provided, maximum is 8"));
-        }
-        if certs.len() == 0 {
-            return Ok(0);
-        }
-
-        let root_cert = self.root_cert().await?;
-        if root_cert != certs[0] {
-            return Err(anyhow!(
-                "Root certificate does not match the first provided certificate"
-            ));
+    pub async fn batch_query_cert_cache(
+        &self,
+        certs_digests: Vec<Vec<B256>>,
+    ) -> anyhow::Result<Vec<u8>> {
+        use aws_nitro_enclave_attestation_verifier::stub::INitroEnclaveVerifier::*;
+        if certs_digests.is_empty() {
+            return Ok(vec![]);
         }
 
-        let mut trusted_len = 1;
-
-        let calls = certs
-            .iter()
-            .skip(1)
-            .map(|cert| trustedIntermediateCertsCall {
-                trustedCertHash: *cert,
-            })
-            .collect::<Vec<_>>();
-        for call in calls {
-            let trusted = self.call(&call).await?;
-            if trusted {
-                trusted_len += 1;
-            } else {
-                break;
+        for report_certs in &certs_digests {
+            let len = report_certs.len();
+            if len == 0 || len > 8 {
+                return Err(anyhow!(
+                    "Too many certificate chains provided, maximum is 8, got: {len}"
+                ));
             }
         }
-        Ok(trusted_len)
+
+        let result = self
+            .call(&checkTrustedIntermediateCertsCall {
+                _report_certs: certs_digests,
+            })
+            .await?;
+        Ok(result)
     }
 }

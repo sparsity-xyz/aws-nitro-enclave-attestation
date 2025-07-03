@@ -1,4 +1,4 @@
-use aws_nitro_enclave_attestation_verifier::{verify_attestation_report, VerifierInput};
+use aws_nitro_enclave_attestation_verifier::{stub::VerifierInput, verify_attestation_report};
 use risc0_zkvm::guest::env;
 use std::io::Read;
 

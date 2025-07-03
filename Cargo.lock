@@ -1545,6 +1545,7 @@ dependencies = [
  "sp1-methods",
  "sp1-sdk",
  "tokio",
+ "tracing",
  "x509-verifier-rust-crypto",
 ]
 
@@ -4043,7 +4044,9 @@ dependencies = [
  "aws-nitro-enclave-attestation-verifier",
  "clap",
  "log",
+ "serde_bytes",
  "tokio",
+ "tracing",
  "tracing-subscriber 0.3.19",
  "x509-verifier-rust-crypto",
 ]

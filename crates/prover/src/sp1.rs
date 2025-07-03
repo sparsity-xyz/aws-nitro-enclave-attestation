@@ -1,14 +1,16 @@
 use alloy_primitives::{hex::FromHex, Bytes, B256};
 use anyhow::anyhow;
 use async_trait::async_trait;
-use aws_nitro_enclave_attestation_verifier::{BatchVerifierInput, VerifierInput, VerifierJournal};
+use aws_nitro_enclave_attestation_verifier::stub::{
+    BatchVerifierInput, VerifierInput, VerifierJournal, ZkCoProcessorType,
+};
 use sp1_methods::{SP1_AGGREGATOR_ELF, SP1_VERIFIER_ELF};
 use sp1_sdk::{
     network::builder::NetworkProverBuilder, EnvProver, HashableKey, Prover as Sp1ProverTrait,
     SP1Proof, SP1Stdin,
 };
 
-use crate::{types::Proof, ProgramId, ProveResult, Prover, ProverConfig};
+use crate::{types::Proof, ProgramId, ProofType, ProveResult, Prover, ProverConfig};
 
 pub struct SP1Prover {
     cfg: ProverConfig,
@@ -40,10 +42,14 @@ impl SP1Prover {
     }
 }
 
-#[async_trait]
+#[async_trait(?Send)]
 impl Prover for SP1Prover {
     fn zkvm_info(&self) -> String {
         format!("sp1/{}", sp1_sdk::SP1_CIRCUIT_VERSION)
+    }
+
+    fn zk_type(&self) -> ZkCoProcessorType {
+        ZkCoProcessorType::Succinct
     }
 
     fn decode_proof(&self, proof: &Proof) -> anyhow::Result<Bytes> {
@@ -100,7 +106,7 @@ impl Prover for SP1Prover {
         let verifier_vk_digest = B256::new(unsafe { std::mem::transmute(verifier_vk.hash_u32()) });
 
         let batch_input = BatchVerifierInput {
-            verifier_vk: verifier_vk_digest,
+            verifierVk: verifier_vk_digest,
             outputs: journals,
         };
 
@@ -116,19 +122,25 @@ impl Prover for SP1Prover {
 
         let proof = self.prove(SP1_AGGREGATOR_ELF, false, stdin)?;
 
-        Ok(self.build_result(proof)?)
+        Ok(self.build_result(proof, ProofType::Aggregator)?)
     }
 
     fn prove_partial(&self, input: &VerifierInput) -> anyhow::Result<ProveResult> {
         let mut stdin = SP1Stdin::new();
         stdin.write_vec(input.encode());
-        Ok(self.build_result(self.prove(SP1_VERIFIER_ELF, true, stdin)?)?)
+        Ok(self.build_result(
+            self.prove(SP1_VERIFIER_ELF, true, stdin)?,
+            ProofType::Verifier,
+        )?)
     }
 
     fn prove_single(&self, input: &VerifierInput) -> anyhow::Result<ProveResult> {
         let mut stdin = SP1Stdin::new();
         stdin.write_vec(input.encode());
-        Ok(self.build_result(self.prove(SP1_VERIFIER_ELF, false, stdin)?)?)
+        Ok(self.build_result(
+            self.prove(SP1_VERIFIER_ELF, false, stdin)?,
+            ProofType::Verifier,
+        )?)
     }
 
     async fn upload_image(&self) -> anyhow::Result<ProgramId> {
