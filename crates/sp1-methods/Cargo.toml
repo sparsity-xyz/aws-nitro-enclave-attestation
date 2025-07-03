@@ -1,0 +1,10 @@
+[package]
+name = "sp1-methods"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+sp1-sdk.workspace = true
+
+[build-dependencies]
+sp1-build = "5.0.0"

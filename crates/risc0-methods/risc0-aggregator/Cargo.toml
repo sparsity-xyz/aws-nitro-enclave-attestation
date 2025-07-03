@@ -1,0 +1,12 @@
+[package]
+name = "risc0-aggregator"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+risc0-zkvm = { workspace = true, default-features = false, features = ['std'] }
+aws-nitro-enclave-attestation-verifier.workspace = true
+hex = "0.4"
+alloy-primitives = "1.2"

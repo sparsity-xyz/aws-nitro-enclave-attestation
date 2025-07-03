@@ -1,2 +1,4 @@
-# aws-nitro-enclave-attestation
-AWS Nitro Enclave Attestation CLI
+Nitro Enclaves Attestation CLI
+
+
+git submodule update --init --recursive

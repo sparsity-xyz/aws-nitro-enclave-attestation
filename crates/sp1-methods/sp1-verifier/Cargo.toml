@@ -1,0 +1,12 @@
+[package]
+name = "sp1-verifier"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+alloy-sol-types = { workspace = true }
+sp1-zkvm = { workspace = true }
+aws-nitro-enclave-attestation-verifier = { workspace = true, features = ["sp1"] }
+alloy-primitives = { workspace = true }

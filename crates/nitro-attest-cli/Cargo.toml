@@ -1,0 +1,22 @@
+[package]
+name = "nitro-attest-cli"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[features]
+default = ["risc0", "sp1"]
+sp1 = ["aws-nitro-enclave-attestation-prover/sp1"]
+risc0 = ["aws-nitro-enclave-attestation-prover/risc0"]
+
+[dependencies]
+clap.workspace = true
+anyhow.workspace = true
+aws-nitro-enclave-attestation-verifier.workspace = true
+aws-nitro-enclave-attestation-prover.workspace = true
+x509-verifier-rust-crypto.workspace = true
+alloy-primitives.workspace = true
+tokio.workspace = true
+tracing-subscriber.workspace = true
+log.workspace = true
