@@ -13,10 +13,14 @@ A command-line interface (CLI) tool for AWS Nitro Enclave attestation verificati
 
 ## Features
 
-* **Zero-Knowledge Proof Generation**: Creates on-chain verifiable zero-knowledge proofs (ZKPs) for attestation reports
-* **Multi-Backend Support**: Compatible with both Risc0 and Succinct proving systems, providing a unified user experience
-* **Batch Verification**: Supports attestation report batch verification to significantly reduce on-chain verification costs
-* **Smart Contract Integration**: Includes on-chain verification contracts for seamless blockchain integration
+* **Zero-Knowledge Proof Generation**
+  * Creates on-chain verifiable zero-knowledge proofs (ZKPs) for attestation reports
+* **Multi-Backend Support**
+  * Compatible with both Risc0 and Succinct proving systems, providing a unified user experience
+* **Batch Verification**
+  * Supports attestation report batch verification to significantly reduce on-chain verification costs
+* **Smart Contract Integration**
+  * Includes on-chain verification contracts for seamless blockchain integration
 
 ## Getting Started
 
@@ -31,6 +35,8 @@ Ensure you have the following installed:
 Generate proofs for single or multiple attestation reports:
 
 ```bash
+$ export VERIFIER=$(NitroEnclaveVerifier address) RPC_URL=http://localhost:8545
+
 # Generate proof using SP1 backend
 $ cargo run prove --sp1 --report samples/attestation_1.report --out proof.json
 
