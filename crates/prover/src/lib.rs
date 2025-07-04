@@ -29,16 +29,16 @@ pub struct ProverConfig {
     pub risc0_api_url: Option<String>,
 }
 
-pub fn set_prover_dev_mode(dev_mode: bool) {
+pub fn set_prover_dev_mode(_dev_mode: bool) {
     #[cfg(feature = "sp1")]
-    if dev_mode {
+    if _dev_mode {
         std::env::set_var("SP1_PROVER", "mock");
     } else {
         std::env::set_var("SP1_PROVER", "network");
     }
 
     #[cfg(feature = "risc0")]
-    if dev_mode {
+    if _dev_mode {
         std::env::set_var("RISC0_PROVER", "");
         std::env::set_var("RISC0_DEV_MODE", "1");
         std::env::set_var("RISC0_INFO", "1");
@@ -48,41 +48,27 @@ pub fn set_prover_dev_mode(dev_mode: bool) {
     }
 }
 
-pub fn new_prover_by_name(zkvm_info: &str, cfg: ProverConfig) -> anyhow::Result<Box<dyn Prover>> {
+pub fn new_prover(_cfg: ProverConfig) -> anyhow::Result<Box<dyn Prover>> {
     #[cfg(feature = "risc0")]
-    if zkvm_info.starts_with("risc0/") {
-        return Ok(Box::new(risc0::Risc0Prover::new(cfg)));
-    }
-
-    #[cfg(feature = "sp1")]
-    if zkvm_info.starts_with("sp1/") {
-        return Ok(Box::new(sp1::SP1Prover::new(cfg)));
-    }
-
-    Err(anyhow::anyhow!("unknown prover: {}", zkvm_info))
-}
-
-pub fn new_prover(cfg: ProverConfig) -> anyhow::Result<Box<dyn Prover>> {
-    #[cfg(feature = "risc0")]
-    if cfg.risc0 {
+    if _cfg.risc0 {
         #[cfg(feature = "sp1")]
-        if cfg.sp1 {
+        if _cfg.sp1 {
             return Err(anyhow::anyhow!(
                 "Error: cannot specify both risc0 and sp1 in the configuration."
             ));
         }
-        return Ok(Box::new(risc0::Risc0Prover::new(cfg)));
+        return Ok(Box::new(risc0::Risc0Prover::new(_cfg)));
     }
 
     #[cfg(feature = "sp1")]
-    if cfg.sp1 {
+    if _cfg.sp1 {
         #[cfg(feature = "risc0")]
-        if cfg.risc0 {
+        if _cfg.risc0 {
             return Err(anyhow::anyhow!(
                 "Error: cannot specify both risc0 and sp1 in the configuration."
             ));
         }
-        return Ok(Box::new(sp1::SP1Prover::new(cfg)));
+        return Ok(Box::new(sp1::SP1Prover::new(_cfg)));
     }
 
     Err(anyhow::anyhow!("Error: no prover specified."))

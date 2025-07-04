@@ -30,7 +30,7 @@ lto = true
 
 [workspace.dependencies]
 aws-nitro-enclave-attestation-verifier = { path = "crates/verifier" }
-aws-nitro-enclave-attestation-prover = { path = "crates/prover" }
+aws-nitro-enclave-attestation-prover = { path = "crates/prover", default-features = false }
 x509-verifier-rust-crypto = { path = "crates/x509-verifier-rust-crypto" }
 risc0-methods = { path = "crates/risc0-methods" }
 sp1-methods = { path = "crates/sp1-methods" }
