@@ -9,37 +9,56 @@
 # AWS Nitro Enclave Attestation CLI
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
-The CLI (Command Line Interface) tool for the AWS nitro enclave attestation verification.
+A command-line interface (CLI) tool for AWS Nitro Enclave attestation verification that generates zero-knowledge proofs for on-chain verification.
 
-## Functionality
+## Features
 
-* Generates the on-chain verifiable ZKP for the attestation report.
-* Supports both Risc0 and Succinct and provides unifid user expirence.
-* Supports attestation report batch verification to reduce the on-chain verification cost.
-* On-chain verification contract.
+* **Zero-Knowledge Proof Generation**: Creates on-chain verifiable zero-knowledge proofs (ZKPs) for attestation reports
+* **Multi-Backend Support**: Compatible with both Risc0 and Succinct proving systems, providing a unified user experience
+* **Batch Verification**: Supports attestation report batch verification to significantly reduce on-chain verification costs
+* **Smart Contract Integration**: Includes on-chain verification contracts for seamless blockchain integration
 
 ## Getting Started
 
+### Prerequisites
 
-### Build Contracts
-```
-$ git submodule update --init --recursive
-$ cd contracts
-$ forge build
-```
+Ensure you have the following installed:
+- [Rust](https://rustup.rs/) (latest stable version)
+- [Foundry](https://getfoundry.sh/) for smart contract development
 
-### Generate ZKP
-```
-$ cargo run prove [--sp1 or --risc0] --report samples/attestation_1.report --report samples/attestation_2.report --out aggregated_proof.json
+### Generate Zero-Knowledge Proofs
 
-# Verify Proof on-chain
+Generate proofs for single or multiple attestation reports:
+
+```bash
+# Generate proof using SP1 backend
+$ cargo run prove --sp1 --report samples/attestation_1.report --out proof.json
+
+# Generate proof using RISC0 backend  
+$ cargo run prove --risc0 --report samples/attestation_1.report --out proof.json
+
+# Batch verification with multiple reports
+$ cargo run prove --sp1 --report samples/attestation_1.report --report samples/attestation_2.report --out aggregated_proof.json
+
+# Verify proof on-chain
 $ cargo run proof verify-on-chain --proof aggregated_proof.json
 ```
 
-### Inspect Attestation Report
+### Performance Optimization
 
-```
+> [!NOTE]
+> Single attestation report verification requires approximately 300M cycles. We recommend specifying the NitroEnclaveVerifier contract address to enable certificate signature verification caching, which can reduce cycle usage to as low as 50M cycles.
+
+### Inspect Attestation Reports
+
+Examine the contents of attestation reports for debugging and verification:
+
+```bash
 $ cargo run debug doc --report samples/attestation_1.report
+```
+
+**Example Output:**
+```
 Doc:
     Module ID: i-07fd4cc4df935eab0-enc01915a74e6ed4aa6
     Timestamp: Aug 16 09:11:49 2024 +00:00(1723799509)
@@ -62,4 +81,45 @@ Cert Chain:
         Valid: Aug 16 09:11:46 2024 +00:00(1723799506) - Aug 16 12:11:49 2024 +00:00(1723810309)
 ```
 
-## Benchmark
+## Development
+
+### Building Smart Contracts
+
+We use [Foundry](https://getfoundry.sh/) for smart contract development. If you don't have it installed, please follow the [installation guide](https://getfoundry.sh/introduction/installation).
+
+```bash
+# Initialize and update submodules
+$ git submodule update --init --recursive
+
+# Navigate to contracts directory and build
+$ cd contracts
+$ forge build
+```
+
+### Project Structure
+
+```
+├── contracts/              # Smart contracts for on-chain verification
+├── crates/                 # Rust workspace crates
+│   ├── nitro-attest-cli/  # CLI application
+│   ├── prover/            # Proof generation logic
+│   ├── verifier/          # Verification utilities
+│   ├── risc0-methods/     # RISC0-specific methods
+│   └── sp1-methods/       # SP1-specific methods
+└── samples/               # Sample attestation reports and proofs
+```
+
+## Performance Benchmarks
+
+
+## License
+
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## Support
+
+For questions and support, please open an issue in the GitHub repository.
