@@ -9,8 +9,11 @@ use risc0_methods::{
 };
 use risc0_zkvm::{default_prover, Digest, ExecutorEnv, InnerReceipt, ProverOpts, VERSION};
 
-use crate::{ProgramId, Proof, ProofType, ProveResult, Prover, ProverConfig};
+use crate::{
+    utils::parallels_blocking, ProgramId, Proof, ProofType, ProveResult, Prover, ProverConfig,
+};
 
+#[derive(Debug)]
 pub struct Risc0Prover {}
 
 impl Risc0Prover {
@@ -97,11 +100,13 @@ impl Prover for Risc0Prover {
         let client = Client::from_env(VERSION)?;
         let verifier_image_id = Digest::new(RISC0_VERIFIER_ID);
         let aggregator_image_id = Digest::new(RISC0_AGGREGATOR_ID);
-        client.upload_img(&verifier_image_id.to_string(), RISC0_VERIFIER_ELF.into())?;
-        client.upload_img(
-            &aggregator_image_id.to_string(),
-            RISC0_AGGREGATOR_ELF.into(),
-        )?;
+        let tasks = &[
+            (verifier_image_id, RISC0_VERIFIER_ELF),
+            (aggregator_image_id, RISC0_AGGREGATOR_ELF),
+        ];
+        parallels_blocking(2, tasks, |(image_id, elf)| {
+            Ok(client.upload_img(&image_id.to_string(), elf.to_vec())?)
+        })?;
         Ok(self.program_id())
     }
 

@@ -11,7 +11,7 @@ use aws_nitro_enclave_attestation_verifier::{
     stub::{VerifierInput, ZkCoProcessorType},
     AttestationReport,
 };
-use utils::block_on;
+use utils::{block_on, parallels_blocking};
 
 #[cfg(feature = "sp1")]
 pub mod sp1;
@@ -75,7 +75,7 @@ pub fn new_prover(_cfg: ProverConfig) -> anyhow::Result<Box<dyn Prover>> {
     Err(anyhow::anyhow!("Error: no prover specified."))
 }
 
-pub trait Prover {
+pub trait Prover: Send + Sync + 'static {
     fn zkvm_info(&self) -> String;
     fn zk_type(&self) -> ZkCoProcessorType;
     fn program_id(&self) -> ProgramId;
@@ -139,11 +139,8 @@ pub trait Prover {
     }
 
     fn prove_multi(&self, input: &[VerifierInput]) -> anyhow::Result<ProveResult> {
-        let mut results = Vec::new();
-        for item in input {
-            let result = self.prove_partial(item)?;
-            results.push(result.proof);
-        }
+        let results = parallels_blocking(4, input, move |input| self.prove_partial(input))?;
+        let results = results.into_iter().map(|item| item.proof).collect();
         Ok(self.prove_aggregated_proofs(results)?)
     }
 

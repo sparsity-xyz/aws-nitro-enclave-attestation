@@ -6,10 +6,10 @@
   </picture>
 </div>
 
-# AWS Nitro Enclave Attestation CLI
+# AWS Nitro Enclave Attestation SDK
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
-A command-line interface (CLI) tool for AWS Nitro Enclave attestation verification that generates zero-knowledge proofs for on-chain verification.
+A SDK for AWS Nitro Enclave attestation verification that generates zero-knowledge proofs for on-chain verification.
 
 ## Features
 
