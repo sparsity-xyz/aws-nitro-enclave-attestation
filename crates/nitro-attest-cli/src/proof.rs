@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
 use anyhow::anyhow;
-use aws_nitro_enclave_attestation_prover::ProveResult;
+use aws_nitro_enclave_attestation_prover::{utils::block_on, ProveResult};
 use clap::{Args, Subcommand};
 
 use crate::utils::ContractArgs;
@@ -12,10 +12,12 @@ pub enum ProofCli {
 }
 
 impl ProofCli {
-    pub async fn run(&self) -> anyhow::Result<()> {
-        match self {
-            ProofCli::VerifyOnChain(cli) => cli.run().await,
-        }
+    pub fn run(&self) -> anyhow::Result<()> {
+        block_on(async {
+            match self {
+                ProofCli::VerifyOnChain(cli) => cli.run().await,
+            }
+        })
     }
 }
 

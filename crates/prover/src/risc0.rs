@@ -1,9 +1,8 @@
 use alloy_primitives::{Bytes, B256};
-use async_trait::async_trait;
 use aws_nitro_enclave_attestation_verifier::stub::{
     BatchVerifierInput, VerifierInput, VerifierJournal, ZkCoProcessorType,
 };
-use bonsai_sdk::non_blocking::Client;
+use bonsai_sdk::blocking::Client;
 use risc0_ethereum_contracts::groth16;
 use risc0_methods::{
     RISC0_AGGREGATOR_ELF, RISC0_AGGREGATOR_ID, RISC0_VERIFIER_ELF, RISC0_VERIFIER_ID,
@@ -32,7 +31,6 @@ impl Risc0Prover {
     }
 }
 
-#[async_trait(?Send)]
 impl Prover for Risc0Prover {
     fn zkvm_info(&self) -> String {
         format!("risc0/{}", VERSION)
@@ -95,19 +93,15 @@ impl Prover for Risc0Prover {
         Ok(self.build_result(proof, ProofType::Verifier)?)
     }
 
-    async fn upload_image(&self) -> anyhow::Result<ProgramId> {
+    fn upload_image(&self) -> anyhow::Result<ProgramId> {
         let client = Client::from_env(VERSION)?;
         let verifier_image_id = Digest::new(RISC0_VERIFIER_ID);
         let aggregator_image_id = Digest::new(RISC0_AGGREGATOR_ID);
-        client
-            .upload_img(&verifier_image_id.to_string(), RISC0_VERIFIER_ELF.into())
-            .await?;
-        client
-            .upload_img(
-                &aggregator_image_id.to_string(),
-                RISC0_AGGREGATOR_ELF.into(),
-            )
-            .await?;
+        client.upload_img(&verifier_image_id.to_string(), RISC0_VERIFIER_ELF.into())?;
+        client.upload_img(
+            &aggregator_image_id.to_string(),
+            RISC0_AGGREGATOR_ELF.into(),
+        )?;
         Ok(self.program_id())
     }
 

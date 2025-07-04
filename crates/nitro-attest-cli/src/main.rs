@@ -1,10 +1,9 @@
 use clap::{Parser, Subcommand};
-use tokio::runtime::Builder;
 use tracing_subscriber::{filter::LevelFilter, EnvFilter};
 
 mod debug;
-mod prove;
 mod proof;
+mod prove;
 mod upload;
 mod utils;
 
@@ -36,14 +35,11 @@ fn main() {
         .init();
 
     let cli = NitroAttestCli::parse();
-    let rt = Builder::new_multi_thread().enable_all().build().unwrap();
-    rt.block_on(async {
-        match &cli.command {
-            Commands::Prove(cli) => cli.run().await,
-            Commands::Debug(cli) => cli.run(),
-            Commands::Upload(cli) => cli.run().await,
-            Commands::Proof(cli) => cli.run().await,
-        }
-        .unwrap()
-    });
+    match &cli.command {
+        Commands::Prove(cli) => cli.run(),
+        Commands::Debug(cli) => cli.run(),
+        Commands::Upload(cli) => cli.run(),
+        Commands::Proof(cli) => cli.run(),
+    }
+    .unwrap()
 }

@@ -11,10 +11,10 @@ pub struct UploadCli {
 }
 
 impl UploadCli {
-    pub async fn run(&self) -> anyhow::Result<()> {
+    pub fn run(&self) -> anyhow::Result<()> {
         set_prover_dev_mode(false);
         let prover = self.prover.new_prover()?;
-        let result = prover.upload_image().await?;
+        let result = prover.upload_image()?;
 
         dbg!(result);
         Ok(())

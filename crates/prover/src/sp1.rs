@@ -10,7 +10,9 @@ use sp1_sdk::{
     SP1Proof, SP1Stdin,
 };
 
-use crate::{types::Proof, ProgramId, ProofType, ProveResult, Prover, ProverConfig};
+use crate::{
+    types::Proof, utils::block_on, ProgramId, ProofType, ProveResult, Prover, ProverConfig,
+};
 
 pub struct SP1Prover {
     cfg: ProverConfig,
@@ -143,23 +145,25 @@ impl Prover for SP1Prover {
         )?)
     }
 
-    async fn upload_image(&self) -> anyhow::Result<ProgramId> {
-        let mut builder = NetworkProverBuilder::default();
-        if let Some(key) = &self.cfg.sp1_private_key {
-            builder = builder.private_key(&key);
-        }
-        if let Some(rpc_url) = &self.cfg.sp1_rpc_url {
-            builder = builder.rpc_url(&rpc_url);
-        }
-        let prover = builder.build();
-        let (_, verifier_vk) = prover.setup(SP1_VERIFIER_ELF);
-        prover
-            .register_program(&verifier_vk, SP1_VERIFIER_ELF)
-            .await?;
-        let (_, aggregator_vk) = prover.setup(SP1_AGGREGATOR_ELF);
-        prover
-            .register_program(&aggregator_vk, SP1_AGGREGATOR_ELF)
-            .await?;
-        Ok(self.program_id())
+    fn upload_image(&self) -> anyhow::Result<ProgramId> {
+        block_on(async {
+            let mut builder = NetworkProverBuilder::default();
+            if let Some(key) = &self.cfg.sp1_private_key {
+                builder = builder.private_key(&key);
+            }
+            if let Some(rpc_url) = &self.cfg.sp1_rpc_url {
+                builder = builder.rpc_url(&rpc_url);
+            }
+            let prover = builder.build();
+            let (_, verifier_vk) = prover.setup(SP1_VERIFIER_ELF);
+            let (_, aggregator_vk) = prover.setup(SP1_AGGREGATOR_ELF);
+            prover
+                .register_program(&verifier_vk, SP1_VERIFIER_ELF)
+                .await?;
+            prover
+                .register_program(&aggregator_vk, SP1_AGGREGATOR_ELF)
+                .await?;
+            Ok(self.program_id())
+        })
     }
 }

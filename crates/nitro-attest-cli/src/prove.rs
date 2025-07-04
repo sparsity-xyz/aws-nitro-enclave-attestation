@@ -29,7 +29,7 @@ pub struct ProveCli {
 }
 
 impl ProveCli {
-    pub async fn run(&self) -> anyhow::Result<()> {
+    pub fn run(&self) -> anyhow::Result<()> {
         set_prover_dev_mode(self.prover.dev);
         if self.report.len() == 0 {
             return Err(anyhow!(
@@ -45,7 +45,7 @@ impl ProveCli {
         let contract = self.contract.stub()?;
         let prover = self.prover.new_prover()?;
 
-        let inputs = prover.build_inputs(raw_reports, contract.as_ref()).await?;
+        let inputs = prover.build_inputs(raw_reports, contract.as_ref())?;
         let result = if inputs.len() == 1 {
             prover.prove_single(&inputs[0])?
         } else {

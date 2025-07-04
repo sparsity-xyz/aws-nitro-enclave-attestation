@@ -6,7 +6,7 @@ use alloy_provider::{PendingTransactionBuilder, Provider, ProviderBuilder};
 use alloy_rpc_types::TransactionRequest;
 use alloy_signer_local::PrivateKeySigner;
 use alloy_sol_types::SolCall;
-use anyhow::anyhow;
+use anyhow::{anyhow, Context};
 use aws_nitro_enclave_attestation_verifier::stub::{VerifierJournal, ZkCoProcessorType};
 
 use crate::{ProofType, ProveResult};
@@ -89,11 +89,14 @@ impl NitroEnclaveVerifier {
     ) -> anyhow::Result<VerifierJournal> {
         use aws_nitro_enclave_attestation_verifier::stub::INitroEnclaveVerifier::*;
         let call = verifyCall {
-            output: journal,
+            output: journal.clone(),
             zkCoprocessor: zk,
-            proofBytes: proof,
+            proofBytes: proof.clone(),
         };
-        Ok(self.call(&call).await?)
+        Ok(self
+            .call(&call)
+            .await
+            .with_context(|| format!("proof: {}, journal: {}", proof, journal))?)
     }
 
     pub async fn batch_verify(
