@@ -100,7 +100,7 @@ pub trait Prover: Send + Sync + 'static {
     /// Generate a partial proof for later aggregation
     fn gen_partial_proof(&self, input: &VerifierInput) -> anyhow::Result<Proof>;
 
-    fn gen_multi_partial_proof(&self, inputs: &[VerifierInput]) -> anyhow::Result<Vec<Proof>> {
+    fn gen_multi_partial_proofs(&self, inputs: &[VerifierInput]) -> anyhow::Result<Vec<Proof>> {
         let max_concurrency = std::env::var("PROVE_MAX_CONCURRENCY")
             .ok()
             .and_then(|s| s.parse::<usize>().ok())
@@ -133,7 +133,7 @@ pub trait Prover: Send + Sync + 'static {
         contract: Option<&NitroEnclaveVerifier>,
     ) -> anyhow::Result<ProveResult> {
         let inputs = self.prepare_verifier_inputs(raw_reports, contract)?;
-        let proofs = self.gen_multi_partial_proof(&inputs)?;
+        let proofs = self.gen_multi_partial_proofs(&inputs)?;
         let result = self.aggregate_proofs(proofs)?;
         Ok(self.create_proof_result(result, ProofType::Aggregator)?)
     }

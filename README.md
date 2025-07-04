@@ -22,6 +22,144 @@ A SDK for AWS Nitro Enclave attestation verification that generates zero-knowled
 * **Smart Contract Integration**
   * Includes on-chain verification contracts for seamless blockchain integration
 
+
+## Using the Prover SDK
+
+The AWS Nitro Enclave Attestation Prover provides a comprehensive SDK for generating zero-knowledge proofs of attestation report validity. This SDK supports both RISC0 and SP1 proving systems and can be integrated into your Rust applications.
+
+### Installation
+
+Add the prover to your `Cargo.toml`:
+
+```toml
+[dependencies]
+aws-nitro-enclave-attestation-prover = { git = "https://github.com/automata-network/aws-nitro-enclave-attestation", features = ["risc0", "sp1"] }
+```
+
+### Examples
+
+<details>
+<summary>Basic Single Attestation Proof</summary>
+
+
+```rust
+use aws_nitro_enclave_attestation_prover::{
+    new_prover, set_prover_dev_mode, ProverConfig
+};
+
+fn main() -> anyhow::Result<()> {
+    // Set development mode for testing
+    set_prover_dev_mode(true);
+    
+    // Configure the prover (RISC0 example)
+    let config = ProverConfig {
+        risc0: true,
+        sp1: false,
+        ..Default::default()
+    };
+    
+    // Create prover instance
+    let prover = new_prover(config)?;
+    
+    // Load attestation report
+    let report_bytes = std::fs::read("samples/attestation_1.report")?;
+    
+    // Generate proof
+    let result = prover.prove_attestation_report(report_bytes, None)?;
+    
+    // Save proof result
+    std::fs::write("proof.json", result.encode_json()?)?;
+    
+    println!("Proof generated successfully!");
+    println!("ZK Type: {:?}", result.zktype);
+    println!("ZK VM: {}", result.zkvm);
+    
+    Ok(())
+}
+```
+
+</details>
+
+<details>
+<summary>Batch Proving with Aggregation</summary>
+
+```rust
+use aws_nitro_enclave_attestation_prover::{
+    new_prover, set_prover_dev_mode, ProverConfig
+};
+
+fn prove_multiple_reports() -> anyhow::Result<()> {
+    set_prover_dev_mode(false); // Use production mode
+    
+    let config = ProverConfig {
+        sp1: true,
+        risc0: false,
+        sp1_private_key: Some(std::env::var("NETWORK_PRIVATE_KEY")?),
+        sp1_rpc_url: Some(std::env::var("SP1_RPC_URL")?),
+        ..Default::default()
+    };
+    
+    let prover = new_prover(config)?;
+    
+    // Load multiple attestation reports
+    let reports = vec![
+        std::fs::read("samples/attestation_1.report")?,
+        std::fs::read("samples/attestation_2.report")?,
+    ];
+    
+    // Generate aggregated proof for all reports
+    let result = prover.prove_multiple_reports(reports, None)?;
+    
+    println!("Aggregated proof generated for {} reports", reports.len());
+    
+    Ok(())
+}
+```
+</details>
+
+
+<details>
+<summary>Smart Contract Integration</summary>
+
+For optimal gas efficiency, integrate with the Nitro Enclave Verifier contract:
+
+```rust
+use aws_nitro_enclave_attestation_prover::{
+    new_prover, ProverConfig,
+    contract::NitroEnclaveVerifier
+};
+use alloy_primitives::Address;
+
+async fn prove_with_contract() -> anyhow::Result<()> {
+    let config = ProverConfig {
+        risc0: true,
+        sp1: false,
+        ..Default::default()
+    };
+    
+    let prover = new_prover(config)?;
+    
+    // Connect to deployed verifier contract
+    let contract_address: Address = "0x1234567890123456789012345678901234567890".parse()?;
+    let rpc_url = "https://1rpc.io/holesky";
+    let verifier = NitroEnclaveVerifier::dial(rpc_url, contract_address, None)?;
+    
+    let report_bytes = std::fs::read("samples/attestation_2.report")?;
+    
+    // Prove with contract optimization
+    let result = prover.prove_attestation_report(
+        report_bytes, 
+        Some(&verifier)
+    )?;
+    
+    // The result.onchain_proof is ready for contract submission
+    println!("On-chain proof: {:?}", result.onchain_proof);
+    
+    Ok(())
+}
+```
+</details>
+
 ## Getting Started
 
 ### Prerequisites
