@@ -75,81 +75,145 @@ pub fn new_prover(_cfg: ProverConfig) -> anyhow::Result<Box<dyn Prover>> {
     Err(anyhow::anyhow!("Error: no prover specified."))
 }
 
+/// AWS Nitro Enclave attestation prover using zero-knowledge proofs
+///
+/// This trait provides the core functionality for generating ZKP
 pub trait Prover: Send + Sync + 'static {
-    fn zkvm_info(&self) -> String;
-    fn zk_type(&self) -> ZkCoProcessorType;
-    fn program_id(&self) -> ProgramId;
-    fn decode_proof(&self, proof: &Proof) -> anyhow::Result<Bytes>;
-    fn upload_image(&self) -> anyhow::Result<ProgramId>;
-    fn prove_single(&self, input: &VerifierInput) -> anyhow::Result<ProveResult>;
-    fn prove_partial(&self, input: &VerifierInput) -> anyhow::Result<ProveResult>;
-    fn prove_aggregated_proofs(&self, proofs: Vec<Proof>) -> anyhow::Result<ProveResult>;
+    /// Get zkVM version and implementation information
+    fn get_zkvm_info(&self) -> String;
 
-    fn build_inputs(
+    /// Get the zero-knowledge coprocessor type (RISC0 or SP1)
+    fn get_zk_type(&self) -> ZkCoProcessorType;
+
+    /// Get program identifiers for verifier and aggregator circuits
+    fn get_program_id(&self) -> ProgramId;
+
+    /// Encode zkVM proof to blockchain-compatible format
+    fn encode_proof_for_onchain(&self, proof: &Proof) -> anyhow::Result<Bytes>;
+
+    /// Upload program images to proving service (Bonsai/SP1 Network)
+    fn upload_program_images(&self) -> anyhow::Result<ProgramId>;
+
+    /// Generate a complete proof for a single verifier input
+    fn gen_single_proof(&self, input: &VerifierInput) -> anyhow::Result<Proof>;
+
+    /// Generate a partial proof for later aggregation
+    fn gen_partial_proof(&self, input: &VerifierInput) -> anyhow::Result<Proof>;
+
+    fn gen_multi_partial_proof(&self, inputs: &[VerifierInput]) -> anyhow::Result<Vec<Proof>> {
+        let max_concurrency = std::env::var("PROVE_MAX_CONCURRENCY")
+            .ok()
+            .and_then(|s| s.parse::<usize>().ok())
+            .unwrap_or_else(|| 8);
+
+        // Generate partial proofs in parallel
+        Ok(parallels_blocking(max_concurrency, inputs, move |input| {
+            self.gen_partial_proof(input)
+        })?)
+    }
+
+    /// Aggregate multiple partial proofs into a single compact proof
+    fn aggregate_proofs(&self, proofs: Vec<Proof>) -> anyhow::Result<Proof>;
+
+    /// Prove a single attestation report
+    fn prove_attestation_report(
+        &self,
+        report_bytes: Vec<u8>,
+        contract: Option<&NitroEnclaveVerifier>,
+    ) -> anyhow::Result<ProveResult> {
+        let inputs = self.prepare_verifier_inputs(vec![report_bytes], contract)?;
+        let proof = self.gen_single_proof(&inputs[0])?;
+        Ok(self.create_proof_result(proof, ProofType::Verifier)?)
+    }
+
+    /// Prove multiple attestation reports with aggregation
+    fn prove_multiple_reports(
+        &self,
+        raw_reports: Vec<Vec<u8>>,
+        contract: Option<&NitroEnclaveVerifier>,
+    ) -> anyhow::Result<ProveResult> {
+        let inputs = self.prepare_verifier_inputs(raw_reports, contract)?;
+        let proofs = self.gen_multi_partial_proof(&inputs)?;
+        let result = self.aggregate_proofs(proofs)?;
+        Ok(self.create_proof_result(result, ProofType::Aggregator)?)
+    }
+
+    /// Prepare verifier inputs from raw attestation reports
+    ///
+    /// This method parses attestation reports, validates certificate chains,
+    /// and queries smart contract for trusted certificate information.
+    fn prepare_verifier_inputs(
         &self,
         raw_reports: Vec<Vec<u8>>,
         contract: Option<&NitroEnclaveVerifier>,
     ) -> anyhow::Result<Vec<VerifierInput>> {
-        block_on(async {
-            let mut reports = Vec::with_capacity(raw_reports.len());
-            // let mut cert_chains = Vec::with_capacity(raw_reports.len());
-            let mut cert_digests = Vec::with_capacity(raw_reports.len());
-            for raw_report in &raw_reports {
-                reports.push(AttestationReport::parse(&raw_report)?);
-                let cert_chain = reports.last().unwrap().cert_chain()?;
-                cert_digests.push(cert_chain.digest().to_vec());
-            }
+        let mut parsed_reports = Vec::with_capacity(raw_reports.len());
+        let mut cert_digests = Vec::with_capacity(raw_reports.len());
 
-            let trusted_certs_len;
-            match contract {
-                Some(stub) => {
-                    trusted_certs_len = stub.batch_query_cert_cache(cert_digests).await?;
-                }
-                None => {
-                    tracing::warn!("Contract information is not provided, which may lead to attestation failures and increased costs. This setup is not recommended for production use.");
-                    let now = SystemTime::now()
-                        .duration_since(UNIX_EPOCH)
-                        .unwrap()
-                        .as_secs();
-                    for report in &reports {
-                        let timestamp = report.doc().timestamp / 1000;
-                        if timestamp + 3600 < now {
-                            tracing::warn!("The attestation report was signed {} seconds ago, which may indicate a verification failure.", now - timestamp);
-                        }
+        // Parse attestation reports and extract certificate chain digests
+        for raw_report in &raw_reports {
+            parsed_reports.push(AttestationReport::parse(&raw_report)?);
+            let cert_chain = parsed_reports.last().unwrap().cert_chain()?;
+            cert_digests.push(cert_chain.digest().to_vec());
+        }
+
+        let trusted_certs_lengths;
+        match contract {
+            Some(verifier_contract) => {
+                // Query smart contract for certificate cache information
+                trusted_certs_lengths =
+                    block_on(verifier_contract.batch_query_cert_cache(cert_digests))?;
+            }
+            None => {
+                tracing::warn!("Contract not provided, may lead to attestation failures and increased costs. Not recommended for production.");
+
+                // Validate report timestamps when no contract is available
+                let current_time = SystemTime::now()
+                    .duration_since(UNIX_EPOCH)
+                    .unwrap()
+                    .as_secs();
+                for report in &parsed_reports {
+                    let report_timestamp = report.doc().timestamp / 1000;
+                    if report_timestamp + 3600 < current_time {
+                        tracing::warn!(
+                            "Report signed {} seconds ago, may indicate verification failure.",
+                            current_time - report_timestamp
+                        );
                     }
-                    // trusted the root certificate
-                    trusted_certs_len = vec![1_u8; reports.len()];
                 }
+                // Trust root certificate by default
+                trusted_certs_lengths = vec![1_u8; parsed_reports.len()];
             }
-            assert!(
-                trusted_certs_len.len() == raw_reports.len(),
-                "Trusted certs length mismatch"
-            );
+        }
 
-            let inputs = raw_reports
-                .into_iter()
-                .zip(trusted_certs_len)
-                .map(|(report, trusted_certs_len)| VerifierInput {
-                    trustedCertsLen: trusted_certs_len,
-                    attestationReport: report.into(),
-                })
-                .collect();
-            Ok(inputs)
-        })
+        assert!(
+            trusted_certs_lengths.len() == raw_reports.len(),
+            "Trusted certificate lengths count mismatch"
+        );
+
+        // Build verifier inputs with trusted certificate information
+        let verifier_inputs = raw_reports
+            .into_iter()
+            .zip(trusted_certs_lengths)
+            .map(|(report_bytes, trusted_cert_len)| VerifierInput {
+                trustedCertsLen: trusted_cert_len,
+                attestationReport: report_bytes.into(),
+            })
+            .collect();
+        Ok(verifier_inputs)
     }
 
-    fn prove_multi(&self, input: &[VerifierInput]) -> anyhow::Result<ProveResult> {
-        let results = parallels_blocking(4, input, move |input| self.prove_partial(input))?;
-        let results = results.into_iter().map(|item| item.proof).collect();
-        Ok(self.prove_aggregated_proofs(results)?)
-    }
-
-    fn build_result(&self, proof: Proof, proof_type: ProofType) -> anyhow::Result<ProveResult> {
+    /// Build a complete proof result with all metadata
+    fn create_proof_result(
+        &self,
+        proof: Proof,
+        proof_type: ProofType,
+    ) -> anyhow::Result<ProveResult> {
         Ok(ProveResult {
-            zktype: self.zk_type(),
-            zkvm: self.zkvm_info(),
-            program_id: self.program_id(),
-            onchain_proof: self.decode_proof(&proof)?,
+            zktype: self.get_zk_type(),
+            zkvm: self.get_zkvm_info(),
+            program_id: self.get_program_id(),
+            onchain_proof: self.encode_proof_for_onchain(&proof)?,
             proof,
             proof_type,
         })

@@ -9,9 +9,7 @@ use risc0_methods::{
 };
 use risc0_zkvm::{default_prover, Digest, ExecutorEnv, InnerReceipt, ProverOpts, VERSION};
 
-use crate::{
-    utils::parallels_blocking, ProgramId, Proof, ProofType, ProveResult, Prover, ProverConfig,
-};
+use crate::{utils::parallels_blocking, ProgramId, Proof, Prover, ProverConfig};
 
 #[derive(Debug)]
 pub struct Risc0Prover {}
@@ -35,24 +33,24 @@ impl Risc0Prover {
 }
 
 impl Prover for Risc0Prover {
-    fn zkvm_info(&self) -> String {
+    fn get_zkvm_info(&self) -> String {
         format!("risc0/{}", VERSION)
     }
 
-    fn zk_type(&self) -> ZkCoProcessorType {
+    fn get_zk_type(&self) -> ZkCoProcessorType {
         ZkCoProcessorType::RiscZero
     }
 
-    fn decode_proof(&self, proof: &Proof) -> anyhow::Result<Bytes> {
+    fn encode_proof_for_onchain(&self, proof: &Proof) -> anyhow::Result<Bytes> {
         let receipt = proof.decode_proof::<InnerReceipt>()?;
-        let proof = match receipt {
+        let encoded_proof = match receipt {
             InnerReceipt::Groth16(groth16_receipt) => groth16::encode(&groth16_receipt.seal)?,
             _ => vec![],
         };
-        Ok(proof.into())
+        Ok(encoded_proof.into())
     }
 
-    fn program_id(&self) -> ProgramId {
+    fn get_program_id(&self) -> ProgramId {
         let verifier_image_id = Digest::new(RISC0_VERIFIER_ID);
         let aggregator_image_id = Digest::new(RISC0_AGGREGATOR_ID);
 
@@ -63,7 +61,7 @@ impl Prover for Risc0Prover {
         }
     }
 
-    fn prove_aggregated_proofs(&self, proofs: Vec<Proof>) -> anyhow::Result<ProveResult> {
+    fn aggregate_proofs(&self, proofs: Vec<Proof>) -> anyhow::Result<Proof> {
         let mut journals = Vec::with_capacity(proofs.len());
         for item in &proofs {
             let decoded = item.decode_journal::<VerifierJournal>()?;
@@ -84,19 +82,18 @@ impl Prover for Risc0Prover {
         let opts = ProverOpts::groth16();
 
         let proof = self.prove(env, RISC0_AGGREGATOR_ELF, &opts)?;
-        Ok(self.build_result(proof, ProofType::Aggregator)?)
+        Ok(proof)
     }
 
-    fn prove_single(&self, input: &VerifierInput) -> anyhow::Result<ProveResult> {
+    fn gen_single_proof(&self, input: &VerifierInput) -> anyhow::Result<Proof> {
         let env = ExecutorEnv::builder()
             .write_slice(&input.encode())
             .build()?;
         let opts = ProverOpts::groth16();
-        let proof = self.prove(env, RISC0_VERIFIER_ELF, &opts)?;
-        Ok(self.build_result(proof, ProofType::Verifier)?)
+        Ok(self.prove(env, RISC0_VERIFIER_ELF, &opts)?)
     }
 
-    fn upload_image(&self) -> anyhow::Result<ProgramId> {
+    fn upload_program_images(&self) -> anyhow::Result<ProgramId> {
         let client = Client::from_env(VERSION)?;
         let verifier_image_id = Digest::new(RISC0_VERIFIER_ID);
         let aggregator_image_id = Digest::new(RISC0_AGGREGATOR_ID);
@@ -107,15 +104,15 @@ impl Prover for Risc0Prover {
         parallels_blocking(2, tasks, |(image_id, elf)| {
             Ok(client.upload_img(&image_id.to_string(), elf.to_vec())?)
         })?;
-        Ok(self.program_id())
+        Ok(self.get_program_id())
     }
 
-    fn prove_partial(&self, input: &VerifierInput) -> anyhow::Result<ProveResult> {
+    fn gen_partial_proof(&self, input: &VerifierInput) -> anyhow::Result<Proof> {
         let env = ExecutorEnv::builder()
             .write_slice(&input.encode())
             .build()?;
         let opts = ProverOpts::composite();
         let proof = self.prove(env, RISC0_VERIFIER_ELF, &opts)?;
-        Ok(self.build_result(proof, ProofType::Verifier)?)
+        Ok(proof)
     }
 }

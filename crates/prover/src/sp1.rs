@@ -10,9 +10,7 @@ use sp1_sdk::{
     SP1Proof, SP1Stdin,
 };
 
-use crate::{
-    types::Proof, utils::block_on, ProgramId, ProofType, ProveResult, Prover, ProverConfig,
-};
+use crate::{types::Proof, utils::block_on, ProgramId, Prover, ProverConfig};
 
 pub struct SP1Prover {
     cfg: ProverConfig,
@@ -46,15 +44,15 @@ impl SP1Prover {
 
 #[async_trait(?Send)]
 impl Prover for SP1Prover {
-    fn zkvm_info(&self) -> String {
+    fn get_zkvm_info(&self) -> String {
         format!("sp1/{}", sp1_sdk::SP1_CIRCUIT_VERSION)
     }
 
-    fn zk_type(&self) -> ZkCoProcessorType {
+    fn get_zk_type(&self) -> ZkCoProcessorType {
         ZkCoProcessorType::Succinct
     }
 
-    fn decode_proof(&self, proof: &Proof) -> anyhow::Result<Bytes> {
+    fn encode_proof_for_onchain(&self, proof: &Proof) -> anyhow::Result<Bytes> {
         let sp1_proof = proof.decode_proof::<SP1Proof>()?;
         Ok(match sp1_proof {
             SP1Proof::Groth16(groth16_proof) => {
@@ -87,7 +85,7 @@ impl Prover for SP1Prover {
         })
     }
 
-    fn program_id(&self) -> ProgramId {
+    fn get_program_id(&self) -> ProgramId {
         let (_, verifier_vk) = self.client.setup(SP1_VERIFIER_ELF);
         let (_, aggregator_vk) = self.client.setup(SP1_AGGREGATOR_ELF);
         ProgramId {
@@ -97,7 +95,7 @@ impl Prover for SP1Prover {
         }
     }
 
-    fn prove_aggregated_proofs(&self, proofs: Vec<Proof>) -> anyhow::Result<ProveResult> {
+    fn aggregate_proofs(&self, proofs: Vec<Proof>) -> anyhow::Result<Proof> {
         let mut journals = Vec::with_capacity(proofs.len());
         for item in &proofs {
             let decoded = item.decode_journal::<VerifierJournal>()?;
@@ -122,30 +120,22 @@ impl Prover for SP1Prover {
             stdin.write_proof(*proof, verifier_vk.vk.clone());
         }
 
-        let proof = self.prove(SP1_AGGREGATOR_ELF, false, stdin)?;
-
-        Ok(self.build_result(proof, ProofType::Aggregator)?)
+        Ok(self.prove(SP1_AGGREGATOR_ELF, false, stdin)?)
     }
 
-    fn prove_partial(&self, input: &VerifierInput) -> anyhow::Result<ProveResult> {
+    fn gen_partial_proof(&self, input: &VerifierInput) -> anyhow::Result<Proof> {
         let mut stdin = SP1Stdin::new();
         stdin.write_vec(input.encode());
-        Ok(self.build_result(
-            self.prove(SP1_VERIFIER_ELF, true, stdin)?,
-            ProofType::Verifier,
-        )?)
+        Ok(self.prove(SP1_VERIFIER_ELF, true, stdin)?)
     }
 
-    fn prove_single(&self, input: &VerifierInput) -> anyhow::Result<ProveResult> {
+    fn gen_single_proof(&self, input: &VerifierInput) -> anyhow::Result<Proof> {
         let mut stdin = SP1Stdin::new();
         stdin.write_vec(input.encode());
-        Ok(self.build_result(
-            self.prove(SP1_VERIFIER_ELF, false, stdin)?,
-            ProofType::Verifier,
-        )?)
+        Ok(self.prove(SP1_VERIFIER_ELF, false, stdin)?)
     }
 
-    fn upload_image(&self) -> anyhow::Result<ProgramId> {
+    fn upload_program_images(&self) -> anyhow::Result<ProgramId> {
         block_on(async {
             let mut builder = NetworkProverBuilder::default();
             if let Some(key) = &self.cfg.sp1_private_key {
@@ -163,7 +153,7 @@ impl Prover for SP1Prover {
             prover
                 .register_program(&aggregator_vk, SP1_AGGREGATOR_ELF)
                 .await?;
-            Ok(self.program_id())
+            Ok(self.get_program_id())
         })
     }
 }

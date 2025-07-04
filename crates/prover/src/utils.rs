@@ -33,8 +33,8 @@ where
         let mut result: Vec<Option<Result<E>>> = Vec::with_capacity(tasks.len());
         result.resize_with(tasks.len(), || None);
 
-        let (worker_request_tx, worker_request_rx) = mpsc::channel::<mpsc::Sender<(usize, &T)>>();
-        let (result_tx, result_rx) = mpsc::channel::<(usize, Result<E>)>();
+        let (worker_request_tx, worker_request_rx) = mpsc::channel();
+        let (result_tx, result_rx) = mpsc::channel();
 
         for _ in 0..max_concurrency {
             let handler = Arc::clone(&handler);
@@ -42,7 +42,7 @@ where
             let result_tx = result_tx.clone();
 
             s.spawn(move |_| {
-                let (task_tx, task_rx) = mpsc::channel::<(usize, &T)>();
+                let (task_tx, task_rx) = mpsc::channel();
 
                 loop {
                     if worker_request_tx.send(task_tx.clone()).is_err() {
@@ -54,7 +54,7 @@ where
                     };
 
                     let result = panic::catch_unwind(AssertUnwindSafe(|| {
-                        handler(&task).with_context(|| format!("handler failed at index {}", idx))
+                        handler(task).with_context(|| format!("handler failed at index {}", idx))
                     }))
                     .unwrap_or_else(|_| Err(anyhow::anyhow!("panic at index {}", idx)));
 

@@ -14,7 +14,7 @@ impl UploadCli {
     pub fn run(&self) -> anyhow::Result<()> {
         set_prover_dev_mode(false);
         let prover = self.prover.new_prover()?;
-        let result = prover.upload_image()?;
+        let result = prover.upload_program_images()?;
 
         dbg!(result);
         Ok(())

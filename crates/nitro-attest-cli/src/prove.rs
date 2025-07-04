@@ -44,12 +44,10 @@ impl ProveCli {
 
         let contract = self.contract.stub()?;
         let prover = self.prover.new_prover()?;
-
-        let inputs = prover.build_inputs(raw_reports, contract.as_ref())?;
-        let result = if inputs.len() == 1 {
-            prover.prove_single(&inputs[0])?
+        let result = if raw_reports.len() == 1 {
+            prover.prove_attestation_report(raw_reports.remove(0), contract.as_ref())?
         } else {
-            prover.prove_multi(&inputs)?
+            prover.prove_multiple_reports(raw_reports, contract.as_ref())?
         };
 
         if let Some(out) = &self.out {
