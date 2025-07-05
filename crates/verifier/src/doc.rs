@@ -38,7 +38,7 @@ impl AttestationReport {
         &self.doc
     }
 
-    /// Following the steps here: https://docs.aws.amazon.com/enclaves/latest/user/verify-root.html
+    /// Following the steps here: <https://docs.aws.amazon.com/enclaves/latest/user/verify-root.html>
     pub fn authenticate(
         &self,
         trusted_certs_len: usize,

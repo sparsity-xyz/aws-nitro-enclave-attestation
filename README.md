@@ -44,35 +44,29 @@ aws-nitro-enclave-attestation-prover = { git = "https://github.com/automata-netw
 
 ```rust
 use aws_nitro_enclave_attestation_prover::{
-    new_prover, set_prover_dev_mode, ProverConfig
+    NitroEnclaveProver, set_prover_dev_mode, ProverConfig
 };
-
 fn main() -> anyhow::Result<()> {
-    // Set development mode for testing
+    // turn on simulation
     set_prover_dev_mode(true);
     
     // Configure the prover (RISC0 example)
-    let config = ProverConfig {
-        risc0: true,
-        sp1: false,
-        ..Default::default()
-    };
+    let config = ProverConfig::RiscZero(Default::default());
     
     // Create prover instance
-    let prover = new_prover(config)?;
+    let prover = NitroEnclaveProver::new(config, None);
     
     // Load attestation report
     let report_bytes = std::fs::read("samples/attestation_1.report")?;
     
     // Generate proof
-    let result = prover.prove_attestation_report(report_bytes, None)?;
+    let result = prover.prove_attestation_report(report_bytes)?;
     
     // Save proof result
     std::fs::write("proof.json", result.encode_json()?)?;
     
     println!("Proof generated successfully!");
-    println!("ZK Type: {:?}", result.zktype);
-    println!("ZK VM: {}", result.zkvm);
+    println!("{}", String::from_utf8_lossy(&result.encode_json()?));
     
     Ok(())
 }
@@ -85,21 +79,13 @@ fn main() -> anyhow::Result<()> {
 
 ```rust
 use aws_nitro_enclave_attestation_prover::{
-    new_prover, set_prover_dev_mode, ProverConfig
+    NitroEnclaveProver, set_prover_dev_mode, ProverConfig
 };
-
 fn prove_multiple_reports() -> anyhow::Result<()> {
-    set_prover_dev_mode(false); // Use production mode
+    set_prover_dev_mode(false);
     
-    let config = ProverConfig {
-        sp1: true,
-        risc0: false,
-        sp1_private_key: Some(std::env::var("NETWORK_PRIVATE_KEY")?),
-        sp1_rpc_url: Some(std::env::var("SP1_RPC_URL")?),
-        ..Default::default()
-    };
-    
-    let prover = new_prover(config)?;
+    let config = ProverConfig::Succinct(Default::default());
+    let prover = NitroEnclaveProver::new(config, None);
     
     // Load multiple attestation reports
     let reports = vec![
@@ -108,9 +94,11 @@ fn prove_multiple_reports() -> anyhow::Result<()> {
     ];
     
     // Generate aggregated proof for all reports
-    let result = prover.prove_multiple_reports(reports, None)?;
+    let reports_count = reports.len();
+    let result = prover.prove_multiple_reports(reports)?;
     
-    println!("Aggregated proof generated for {} reports", reports.len());
+    println!("Aggregated proof generated for {} reports", reports_count);
+    println!("{}", String::from_utf8_lossy(&result.encode_json()?));
     
     Ok(())
 }
@@ -125,35 +113,30 @@ For optimal gas efficiency, integrate with the Nitro Enclave Verifier contract:
 
 ```rust
 use aws_nitro_enclave_attestation_prover::{
-    new_prover, ProverConfig,
-    contract::NitroEnclaveVerifier
+    NitroEnclaveProver, ProverConfig,
+    NitroEnclaveVerifierContract
 };
 use alloy_primitives::Address;
 
 async fn prove_with_contract() -> anyhow::Result<()> {
-    let config = ProverConfig {
-        risc0: true,
-        sp1: false,
-        ..Default::default()
-    };
-    
-    let prover = new_prover(config)?;
-    
     // Connect to deployed verifier contract
     let contract_address: Address = "0x1234567890123456789012345678901234567890".parse()?;
     let rpc_url = "https://1rpc.io/holesky";
-    let verifier = NitroEnclaveVerifier::dial(rpc_url, contract_address, None)?;
+    let verifier = NitroEnclaveVerifierContract::dial(rpc_url, contract_address, None)?;
+
+    let config = ProverConfig::RiscZero(Default::default());
+    let prover = NitroEnclaveProver::new(config, Some(verifier));
     
     let report_bytes = std::fs::read("samples/attestation_2.report")?;
     
     // Prove with contract optimization
-    let result = prover.prove_attestation_report(
-        report_bytes, 
-        Some(&verifier)
-    )?;
+    let result = prover.prove_attestation_report(report_bytes)?;
     
     // The result.onchain_proof is ready for contract submission
-    println!("On-chain proof: {:?}", result.onchain_proof);
+    std::fs::write("proof.json", result.encode_json()?)?;
+    
+    println!("Aggregation Proof generated successfully!");
+    println!("{}", String::from_utf8_lossy(&result.encode_json()?));
     
     Ok(())
 }

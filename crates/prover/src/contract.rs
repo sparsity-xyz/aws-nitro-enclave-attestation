@@ -9,14 +9,15 @@ use alloy_sol_types::SolCall;
 use anyhow::{anyhow, Context};
 use aws_nitro_enclave_attestation_verifier::stub::{VerifierJournal, ZkCoProcessorType};
 
-use crate::{ProofType, ProveResult};
+use crate::{OnchainProof, ProofType};
 
-pub struct NitroEnclaveVerifier {
+#[derive(Clone)]
+pub struct NitroEnclaveVerifierContract {
     contract: Address,
     client: Arc<Box<dyn Provider>>,
 }
 
-impl NitroEnclaveVerifier {
+impl NitroEnclaveVerifierContract {
     pub fn dial(
         endpoint: &str,
         contract: Address,
@@ -63,13 +64,13 @@ impl NitroEnclaveVerifier {
         Ok(result)
     }
 
-    pub async fn verify_proof(&self, proof: &ProveResult) -> anyhow::Result<Vec<VerifierJournal>> {
+    pub async fn verify_proof(&self, proof: &OnchainProof) -> anyhow::Result<Vec<VerifierJournal>> {
         if proof.onchain_proof.len() == 0 {
             return Err(anyhow!(
                 "Proof does not contain an on-chain proof, unable to verify on-chain."
             ));
         }
-        let journal = proof.proof.journal.clone();
+        let journal = proof.raw_proof.journal.clone();
         let proof_bytes = proof.onchain_proof.clone();
         let zk = proof.zktype;
 

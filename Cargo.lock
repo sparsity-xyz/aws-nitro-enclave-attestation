@@ -1532,11 +1532,11 @@ dependencies = [
  "alloy-signer-local 1.0.17",
  "alloy-sol-types",
  "anyhow",
- "async-trait",
  "aws-nitro-enclave-attestation-verifier",
  "bincode",
  "bonsai-sdk",
  "crossbeam",
+ "lazy_static",
  "log",
  "risc0-ethereum-contracts",
  "risc0-methods",
@@ -6723,6 +6723,7 @@ dependencies = [
 name = "sp1-methods"
 version = "0.1.0"
 dependencies = [
+ "lazy_static",
  "sp1-build",
  "sp1-sdk",
 ]

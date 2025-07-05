@@ -13,7 +13,7 @@ pub struct UploadCli {
 impl UploadCli {
     pub fn run(&self) -> anyhow::Result<()> {
         set_prover_dev_mode(false);
-        let prover = self.prover.new_prover()?;
+        let prover = self.prover.new_prover(None)?;
         let result = prover.upload_program_images()?;
 
         dbg!(result);

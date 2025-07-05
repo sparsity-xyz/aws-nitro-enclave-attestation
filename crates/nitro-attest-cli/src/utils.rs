@@ -1,6 +1,7 @@
 use alloy_primitives::Address;
+use anyhow::anyhow;
 use aws_nitro_enclave_attestation_prover::{
-    contract::NitroEnclaveVerifier, new_prover, Prover, ProverConfig,
+    NitroEnclaveProver, NitroEnclaveVerifierContract, ProverConfig,
 };
 use clap::Args;
 
@@ -27,20 +28,46 @@ pub struct ProverArgs {
 
     #[arg(long, env = "BONSAI_API_URL", default_value = "https://api.bonsai.xyz")]
     pub risc0_api_url: Option<String>,
+
+    #[arg(long, env = "BONSAI_API_KEY")]
+    pub risc0_api_key: Option<String>,
 }
 
 impl ProverArgs {
-    pub fn new_prover(&self) -> anyhow::Result<Box<dyn Prover>> {
-        let prover = new_prover(ProverConfig {
-            #[cfg(feature = "sp1")]
-            sp1: self.sp1,
-            #[cfg(feature = "risc0")]
-            risc0: self.risc0,
-            sp1_private_key: self.sp1_private_key.clone(),
-            sp1_rpc_url: self.sp1_rpc_url.clone(),
-            risc0_api_url: self.risc0_api_url.clone(),
-        })?;
-        Ok(prover)
+    pub fn prover_config(&self) -> anyhow::Result<ProverConfig> {
+        #[cfg(all(feature = "sp1", feature = "risc0"))]
+        if self.sp1 && self.risc0 {
+            return Err(anyhow!(
+                "Cannot use both --sp1 and --risc0 at the same time."
+            ));
+        }
+
+        #[cfg(feature = "sp1")]
+        if self.sp1 {
+            use aws_nitro_enclave_attestation_prover::SP1ProverConfig;
+            return Ok(ProverConfig::Succinct(SP1ProverConfig {
+                private_key: self.sp1_private_key.clone(),
+                rpc_url: self.sp1_rpc_url.clone(),
+            }));
+        }
+
+        #[cfg(feature = "risc0")]
+        if self.risc0 {
+            use aws_nitro_enclave_attestation_prover::RiscZeroProverConfig;
+            return Ok(ProverConfig::RiscZero(RiscZeroProverConfig {
+                api_url: self.risc0_api_url.clone(),
+                api_key: self.risc0_api_key.clone(),
+            }));
+        }
+
+        return Err(anyhow!("No prover specified. "));
+    }
+
+    pub fn new_prover(
+        &self,
+        contract: Option<NitroEnclaveVerifierContract>,
+    ) -> anyhow::Result<NitroEnclaveProver> {
+        Ok(NitroEnclaveProver::new(self.prover_config()?, contract))
     }
 }
 
@@ -60,13 +87,13 @@ impl ContractArgs {
         self.contract.is_none() || self.rpc_url.is_none()
     }
 
-    pub fn stub(&self) -> anyhow::Result<Option<NitroEnclaveVerifier>> {
+    pub fn stub(&self) -> anyhow::Result<Option<NitroEnclaveVerifierContract>> {
         if self.empty() {
             return Ok(None);
         }
         let contract = *self.contract.as_ref().unwrap();
         let rpc_url = self.rpc_url.as_ref().unwrap();
-        let verifier = NitroEnclaveVerifier::dial(&rpc_url, contract, None)?;
+        let verifier = NitroEnclaveVerifierContract::dial(&rpc_url, contract, None)?;
         Ok(Some(verifier))
     }
 }

@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
 use anyhow::anyhow;
-use aws_nitro_enclave_attestation_prover::{utils::block_on, ProveResult};
+use aws_nitro_enclave_attestation_prover::{utils::block_on, OnchainProof};
 use clap::{Args, Subcommand};
 
 use crate::utils::ContractArgs;
@@ -36,7 +36,7 @@ impl ProofVerifyOnChainCli {
             anyhow!("No contract specified. Use --contract, --rpc-url to specify the contract.")
         })?;
 
-        let result = ProveResult::decode_json(&std::fs::read(&self.proof)?)?;
+        let result = OnchainProof::decode_json(&std::fs::read(&self.proof)?)?;
         if result.onchain_proof.len() == 0 {
             return Err(anyhow::anyhow!(
                 "Proof does not contain an on-chain proof, unable to submit."

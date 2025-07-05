@@ -4,12 +4,14 @@ use anyhow::anyhow;
 use aws_nitro_enclave_attestation_verifier::stub::ZkCoProcessorType;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 
+use crate::program::Program;
+
 #[derive(Debug, Serialize, Deserialize)]
-pub struct ProveResult {
+pub struct OnchainProof {
     pub zktype: ZkCoProcessorType,
-    pub zkvm: String,
+    pub zkvm_version: String,
     pub program_id: ProgramId,
-    pub proof: Proof,
+    pub raw_proof: RawProof,
     pub onchain_proof: Bytes,
     pub proof_type: ProofType,
 }
@@ -20,23 +22,39 @@ pub enum ProofType {
     Aggregator,
 }
 
-impl ProveResult {
+impl OnchainProof {
     pub fn new(
         zktype: ZkCoProcessorType,
-        zkvm: String,
+        zkvm_version: String,
         program_id: ProgramId,
-        proof: Proof,
         onchain_proof: Bytes,
+        raw_proof: RawProof,
         proof_type: ProofType,
     ) -> Self {
         Self {
             zktype,
-            zkvm,
+            zkvm_version,
             program_id,
-            proof,
+            raw_proof,
             onchain_proof,
             proof_type,
         }
+    }
+
+    pub fn new_from_program<P: Program + ?Sized>(
+        p: &P,
+        program_id: ProgramId,
+        raw_proof: RawProof,
+        proof_type: ProofType,
+    ) -> anyhow::Result<Self> {
+        Ok(Self::new(
+            p.zktype(),
+            p.version().into(),
+            program_id,
+            p.onchain_proof(&raw_proof)?,
+            raw_proof,
+            proof_type,
+        ))
     }
 
     pub fn encode_json(&self) -> anyhow::Result<Vec<u8>> {
@@ -56,12 +74,18 @@ pub struct ProgramId {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct Proof {
+pub enum RawProofType {
+    Groth16,
+    Composite,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct RawProof {
     pub encoded_proof: Bytes,
     pub journal: Bytes,
 }
 
-impl Proof {
+impl RawProof {
     pub fn from_proof<P>(proof: P, journal: Bytes) -> anyhow::Result<Self>
     where
         P: Serialize,

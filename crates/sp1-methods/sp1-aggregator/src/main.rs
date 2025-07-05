@@ -1,6 +1,7 @@
 #![no_main]
 sp1_zkvm::entrypoint!(main);
 
+use alloy_primitives::B256;
 use aws_nitro_enclave_attestation_verifier::stub::{BatchVerifierInput, BatchVerifierJournal};
 use sp1_zkvm::lib::verify::verify_sp1_proof;
 
