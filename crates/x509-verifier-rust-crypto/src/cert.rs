@@ -95,6 +95,8 @@ impl<'a> Cert<'a> {
         let issuer_key = issuer.unwrap_or(self).pubkey();
         let sig_algo = self.sig_algo()?;
 
+        sig_algo.check_compatible_with(issuer_key.algo)?;
+
         let mut sig = Cow::Borrowed(self.signature());
         if let KeyAlgo::ECDSA(params) = issuer_key.algo {
             sig = Cow::Owned(ec_decode_sig(&sig, params)?);

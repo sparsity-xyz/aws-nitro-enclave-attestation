@@ -91,6 +91,21 @@ impl SigAlgo {
             Err(anyhow!("invalid sig oid: {:?}", oid.to_id_string()))
         }
     }
+
+    pub fn check_compatible_with(self, key_algo: KeyAlgo) -> anyhow::Result<()> {
+        match (self, key_algo) {
+            (SigAlgo::EcdsaSHA256, KeyAlgo::ECDSA(KeyAlgoParams::P256)) => Ok(()),
+            (SigAlgo::EcdsaSHA256, KeyAlgo::ECDSA(KeyAlgoParams::P384)) => Ok(()),
+            (SigAlgo::EcdsaSHA384, KeyAlgo::ECDSA(KeyAlgoParams::P384)) => Ok(()),
+            (SigAlgo::RsaSHA256, KeyAlgo::RSA) => Ok(()),
+            (SigAlgo::RsaSSAPSS, KeyAlgo::RSA) => Ok(()),
+            _ => Err(anyhow!(
+                "Incompatible key and signature algorithm, issuer_pubkey: {:?}, subject_sig: {:?}",
+                key_algo,
+                self,
+            )),
+        }
+    }
 }
 
 pub fn ec_decode_sig(sig: &[u8], params: KeyAlgoParams) -> anyhow::Result<Vec<u8>> {
@@ -108,10 +123,13 @@ pub fn ec_decode_sig(sig: &[u8], params: KeyAlgoParams) -> anyhow::Result<Vec<u8
             for v in sig_obj.iter() {
                 let mut sig_slice = v.as_biguint().unwrap().to_bytes_be();
                 sig_slice = pad_zero_to_length(sig_slice, expected_len);
-                assert!(
-                    sig_slice.len() == expected_len,
-                    "sig_slice does not match expected length"
-                );
+                if sig_slice.len() != expected_len {
+                    return Err(anyhow!(
+                        "decode ec sig failed: does not match expected length, want: {}, got: {}",
+                        expected_len,
+                        sig_slice.len()
+                    ));
+                }
                 ret.append(&mut sig_slice);
             }
         }

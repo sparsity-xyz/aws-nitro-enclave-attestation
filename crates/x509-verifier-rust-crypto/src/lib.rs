@@ -39,7 +39,7 @@ mod tests {
     fn test_short_sig() {
         let certs = read_cert_chain_json("short_sig");
         let cert_chain = CertChain::parse_rev(&certs).unwrap();
-        assert!(cert_chain.verify_chain(0).unwrap());
+        assert!(cert_chain.verify_chain(0).unwrap(), "verification failed");
     }
 
     fn read_cert_chain_json(name: &str) -> Vec<Vec<u8>> {
@@ -57,21 +57,21 @@ mod tests {
     fn test_apple_ios_der_ecdsa() {
         let certs = read_cert_chain_json("apple_ios_der_ec");
         let cert_chain = CertChain::parse_rev(&certs).unwrap();
-        assert!(cert_chain.verify_chain(0).unwrap());
+        assert!(cert_chain.verify_chain(0).unwrap(), "verification failed");
     }
 
     #[test]
     fn test_azure_snp_vek_cert() {
         let certs = read_cert_chain_json("azure_snp_vek_cert");
         let cert_chain = CertChain::parse_rev(&certs).unwrap();
-        assert!(cert_chain.verify_chain(0).unwrap());
+        assert!(cert_chain.verify_chain(0).unwrap(), "verification failed");
     }
 
     #[test]
     fn test_gcp_tdx_tpm_cert() {
         let certs = read_cert_chain_json("gcp_tdx_tpm_cert");
         let cert_chain = CertChain::parse_rev(&certs).unwrap();
-        assert!(cert_chain.verify_chain(0).unwrap());
+        assert!(cert_chain.verify_chain(0).unwrap(), "verification failed");
     }
 
     #[test]
@@ -85,7 +85,7 @@ mod tests {
     fn test_gcp_snp_vek_cert() {
         let certs = read_cert_chain_json("gcp_snp_vek_cert");
         let cert_chain = CertChain::parse_rev(&certs).unwrap();
-        assert!(cert_chain.verify_chain(0).unwrap());
+        assert!(cert_chain.verify_chain(0).unwrap(), "verification failed");
     }
 
     #[test]
@@ -94,7 +94,7 @@ mod tests {
         let pem_chain_data = std::fs::read(pem_path).expect("PEM file not found");
         let der_chain = pem_to_der(&pem_chain_data);
         let cert_chain = CertChain::parse_rev(&der_chain).unwrap();
-        assert!(cert_chain.verify_chain(0).unwrap());
+        assert!(cert_chain.verify_chain(0).unwrap(), "verification failed");
     }
 
     #[test]
@@ -103,7 +103,7 @@ mod tests {
         let pem_chain_data = std::fs::read(pem_path).expect("PEM file not found");
         let der_chain = pem_to_der(&pem_chain_data);
         let cert_chain = CertChain::parse_rev(&der_chain).unwrap();
-        assert!(cert_chain.verify_chain(0).unwrap());
+        assert!(cert_chain.verify_chain(0).unwrap(), "verification failed");
     }
 
     #[test]
@@ -118,7 +118,7 @@ mod tests {
         der_chain.insert(0, vcek_der);
 
         let cert_chain = CertChain::parse_rev(&der_chain).unwrap();
-        assert!(cert_chain.verify_chain(0).unwrap());
+        assert!(cert_chain.verify_chain(0).unwrap(), "verification failed");
     }
 
     // Helper function
