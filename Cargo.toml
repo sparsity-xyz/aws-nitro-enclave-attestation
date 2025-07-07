@@ -12,7 +12,14 @@ members = [
     "crates/sp1-methods/sp1-verifier",
     "crates/sp1-methods/sp1-aggregator"
 ]
-default-members = ["crates/nitro-attest-cli"]
+default-members = [
+    "crates/nitro-attest-cli",
+    "crates/verifier",
+    "crates/prover",
+    "crates/x509-verifier-rust-crypto",
+    "crates/risc0-methods",
+    "crates/sp1-methods",
+]
 
 [workspace.package]
 version = "0.1.0"

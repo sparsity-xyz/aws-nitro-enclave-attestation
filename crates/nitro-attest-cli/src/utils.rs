@@ -45,7 +45,7 @@ impl ProverArgs {
         #[cfg(feature = "sp1")]
         if self.sp1 {
             use aws_nitro_enclave_attestation_prover::SP1ProverConfig;
-            return Ok(ProverConfig::Succinct(SP1ProverConfig {
+            return Ok(ProverConfig::sp1_with(SP1ProverConfig {
                 private_key: self.sp1_private_key.clone(),
                 rpc_url: self.sp1_rpc_url.clone(),
             }));
@@ -54,7 +54,7 @@ impl ProverArgs {
         #[cfg(feature = "risc0")]
         if self.risc0 {
             use aws_nitro_enclave_attestation_prover::RiscZeroProverConfig;
-            return Ok(ProverConfig::RiscZero(RiscZeroProverConfig {
+            return Ok(ProverConfig::risc0_with(RiscZeroProverConfig {
                 api_url: self.risc0_api_url.clone(),
                 api_key: self.risc0_api_key.clone(),
             }));

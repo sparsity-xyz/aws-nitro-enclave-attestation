@@ -43,13 +43,16 @@ impl<'a> Cert<'a> {
     }
 
     pub fn check_valid(&self, time: ASN1Time) -> anyhow::Result<()> {
-        let validity =  &self.raw.validity;
+        let validity = &self.raw.validity;
         if !validity.is_valid_at(time) {
             Err(anyhow!(
                 "certificate is not valid at time: {}({}), range: {}({}) - {}({})",
-                time, time.timestamp(),
-                validity.not_before, validity.not_before.timestamp(),
-                validity.not_after, validity.not_after.timestamp(),
+                time,
+                time.timestamp(),
+                validity.not_before,
+                validity.not_before.timestamp(),
+                validity.not_after,
+                validity.not_after.timestamp(),
             ))
         } else {
             Ok(())
@@ -94,9 +97,9 @@ impl<'a> Cert<'a> {
 
         let mut sig = Cow::Borrowed(self.signature());
         if let KeyAlgo::ECDSA(params) = issuer_key.algo {
-            sig = Cow::Owned(ec_decode_sig(&sig, params).unwrap());
+            sig = Cow::Owned(ec_decode_sig(&sig, params)?);
         }
-        let result = verify_signature(issuer_key, sig_algo, &sig, self.tbs_certificate()).unwrap();
+        let result = verify_signature(issuer_key, sig_algo, &sig, self.tbs_certificate())?;
         Ok(result)
     }
 }
@@ -120,6 +123,19 @@ impl<'a> CertChain<'a> {
             certs: Vec::new(),
             path_digest: Vec::new(),
         }
+    }
+
+    pub fn parse_rev<'b: 'a, I, N>(chain: I) -> anyhow::Result<Self>
+    where
+        I: IntoIterator<Item = &'b N>,
+        I::IntoIter: DoubleEndedIterator,
+        N: AsRef<[u8]> + 'b,
+    {
+        let mut cert_chain = Self::new();
+        for cert_der in chain.into_iter().rev() {
+            cert_chain.add_cert_by_der(cert_der.as_ref())?;
+        }
+        Ok(cert_chain)
     }
 
     pub fn parse<'b: 'a, I, N>(chain: I) -> anyhow::Result<Self>
@@ -187,7 +203,10 @@ impl<'a> CertChain<'a> {
             } else {
                 Some(&self.certs[i - 1])
             };
-            if !subject.verify(issuer)? {
+            if !subject
+                .verify(issuer)
+                .with_context(|| format!("verify cert sig failed at {}", i))?
+            {
                 return Ok(false);
             }
         }

@@ -22,10 +22,19 @@ use crate::{
     RawProof, RawProofType,
 };
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone)]
 pub struct SP1ProverConfig {
     pub private_key: Option<String>,
     pub rpc_url: Option<String>,
+}
+
+impl Default for SP1ProverConfig {
+    fn default() -> Self {
+        SP1ProverConfig {
+            private_key: std::env::var("NETWORK_PRIVATE_KEY").ok(),
+            rpc_url: std::env::var("NETWORK_RPC_URL").ok(),
+        }
+    }
 }
 
 impl TryFrom<SP1ProverConfig> for RemoteProverConfig {

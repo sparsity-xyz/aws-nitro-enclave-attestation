@@ -22,10 +22,6 @@ pub struct ProveCli {
 
     #[clap(flatten)]
     contract: ContractArgs,
-
-    /// Submit the proof on-chain
-    #[arg(long)]
-    submit_onchain: bool,
 }
 
 impl ProveCli {
@@ -52,9 +48,8 @@ impl ProveCli {
 
         if let Some(out) = &self.out {
             std::fs::write(out, result.encode_json()?)?;
-        } else {
-            println!("proof: {:?}", result);
         }
+        println!("proof: {:?}", result);
 
         Ok(())
     }

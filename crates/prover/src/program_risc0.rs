@@ -26,10 +26,19 @@ lazy_static! {
         ProgramRisc0::new(RISC0_AGGREGATOR_ELF, RISC0_AGGREGATOR_ID);
 }
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone)]
 pub struct RiscZeroProverConfig {
     pub api_url: Option<String>,
     pub api_key: Option<String>,
+}
+
+impl Default for RiscZeroProverConfig {
+    fn default() -> Self {
+        RiscZeroProverConfig {
+            api_url: std::env::var("BONSAI_API_URL").ok(),
+            api_key: std::env::var("BONSAI_API_KEY").ok(),
+        }
+    }
 }
 
 impl TryFrom<RiscZeroProverConfig> for RemoteProverConfig {

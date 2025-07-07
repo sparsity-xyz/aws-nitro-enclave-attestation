@@ -38,8 +38,8 @@ mod tests {
     #[test]
     fn test_short_sig() {
         let certs = read_cert_chain_json("short_sig");
-        let cert_chain = CertChain::parse(&certs).unwrap();
-        assert!(cert_chain.verify_chain().unwrap());
+        let cert_chain = CertChain::parse_rev(&certs).unwrap();
+        assert!(cert_chain.verify_chain(0).unwrap());
     }
 
     fn read_cert_chain_json(name: &str) -> Vec<Vec<u8>> {
@@ -56,36 +56,36 @@ mod tests {
     #[test]
     fn test_apple_ios_der_ecdsa() {
         let certs = read_cert_chain_json("apple_ios_der_ec");
-        let cert_chain = CertChain::parse(&certs).unwrap();
-        assert!(cert_chain.verify_chain().unwrap());
+        let cert_chain = CertChain::parse_rev(&certs).unwrap();
+        assert!(cert_chain.verify_chain(0).unwrap());
     }
 
     #[test]
     fn test_azure_snp_vek_cert() {
         let certs = read_cert_chain_json("azure_snp_vek_cert");
-        let cert_chain = CertChain::parse(&certs).unwrap();
-        assert!(cert_chain.verify_chain().unwrap());
+        let cert_chain = CertChain::parse_rev(&certs).unwrap();
+        assert!(cert_chain.verify_chain(0).unwrap());
     }
 
     #[test]
     fn test_gcp_tdx_tpm_cert() {
         let certs = read_cert_chain_json("gcp_tdx_tpm_cert");
-        let cert_chain = CertChain::parse(&certs).unwrap();
-        assert!(cert_chain.verify_chain().unwrap());
+        let cert_chain = CertChain::parse_rev(&certs).unwrap();
+        assert!(cert_chain.verify_chain(0).unwrap());
     }
 
     #[test]
     fn test_gcp_snp_tpm_cert() {
         let certs = read_cert_chain_json("gcp_snp_tpm_cert");
-        let cert_chain = CertChain::parse(&certs).unwrap();
-        assert!(cert_chain.verify_chain().unwrap());
+        let cert_chain = CertChain::parse_rev(&certs).unwrap();
+        assert!(cert_chain.verify_chain(1).unwrap());
     }
 
     #[test]
     fn test_gcp_snp_vek_cert() {
         let certs = read_cert_chain_json("gcp_snp_vek_cert");
-        let cert_chain = CertChain::parse(&certs).unwrap();
-        assert!(cert_chain.verify_chain().unwrap());
+        let cert_chain = CertChain::parse_rev(&certs).unwrap();
+        assert!(cert_chain.verify_chain(0).unwrap());
     }
 
     #[test]
@@ -93,8 +93,8 @@ mod tests {
         let pem_path: &str = "./samples/android-attestation.pem";
         let pem_chain_data = std::fs::read(pem_path).expect("PEM file not found");
         let der_chain = pem_to_der(&pem_chain_data);
-        let cert_chain = CertChain::parse(&der_chain).unwrap();
-        assert!(cert_chain.verify_chain().unwrap());
+        let cert_chain = CertChain::parse_rev(&der_chain).unwrap();
+        assert!(cert_chain.verify_chain(0).unwrap());
     }
 
     #[test]
@@ -102,8 +102,8 @@ mod tests {
         let pem_path: &str = "./samples/vlek_milan_cert_chain.pem";
         let pem_chain_data = std::fs::read(pem_path).expect("PEM file not found");
         let der_chain = pem_to_der(&pem_chain_data);
-        let cert_chain = CertChain::parse(&der_chain).unwrap();
-        assert!(cert_chain.verify_chain().unwrap());
+        let cert_chain = CertChain::parse_rev(&der_chain).unwrap();
+        assert!(cert_chain.verify_chain(0).unwrap());
     }
 
     #[test]
@@ -117,8 +117,8 @@ mod tests {
         let mut der_chain = pem_to_der(&ca_pem_chain_data);
         der_chain.insert(0, vcek_der);
 
-        let cert_chain = CertChain::parse(&der_chain).unwrap();
-        assert!(cert_chain.verify_chain().unwrap());
+        let cert_chain = CertChain::parse_rev(&der_chain).unwrap();
+        assert!(cert_chain.verify_chain(0).unwrap());
     }
 
     // Helper function

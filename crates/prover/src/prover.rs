@@ -33,7 +33,48 @@ use aws_nitro_enclave_attestation_verifier::{
 /// - `sp1` feature enables the Succinct variant
 /// - `risc0` feature enables the RiscZero variant
 #[derive(Debug, Clone)]
-pub enum ProverConfig {
+pub struct ProverConfig {
+    pub default_trusted_certs_prefix_length: u8,
+    pub system: ProverSystemConfig,
+}
+
+impl ProverConfig {
+    #[cfg(feature = "risc0")]
+    pub fn risc0() -> Self {
+        Self::risc0_with(Default::default())
+    }
+
+    #[cfg(feature = "risc0")]
+    pub fn risc0_with(cfg: crate::program_risc0::RiscZeroProverConfig) -> Self {
+        Self {
+            default_trusted_certs_prefix_length: Self::default_trusted_certs_prefix_length(),
+            system: ProverSystemConfig::RiscZero(cfg),
+        }
+    }
+
+    #[cfg(feature = "sp1")]
+    pub fn sp1() -> Self {
+        Self::sp1_with(Default::default())
+    }
+
+    #[cfg(feature = "sp1")]
+    pub fn sp1_with(cfg: crate::program_sp1::SP1ProverConfig) -> Self {
+        Self {
+            default_trusted_certs_prefix_length: Self::default_trusted_certs_prefix_length(),
+            system: ProverSystemConfig::Succinct(cfg),
+        }
+    }
+
+    fn default_trusted_certs_prefix_length() -> u8 {
+        std::env::var("DEFAULT_TRUSTED_CERTS_PREFIX_LENGTH")
+            .ok()
+            .and_then(|s| s.parse::<u8>().ok())
+            .unwrap_or(1_u8)
+    }
+}
+
+#[derive(Debug, Clone)]
+pub enum ProverSystemConfig {
     #[cfg(feature = "sp1")]
     Succinct(crate::program_sp1::SP1ProverConfig),
     #[cfg(feature = "risc0")]
@@ -66,11 +107,8 @@ pub enum ProverConfig {
 /// };
 ///
 /// fn main() -> anyhow::Result<()> {
-///     // turn on simulation
-///     set_prover_dev_mode(true);
-///     
 ///     // Configure the prover (RISC0 example)
-///     let config = ProverConfig::RiscZero(Default::default());
+///     let config = ProverConfig::risc0();
 ///     
 ///     // Create prover instance
 ///     let prover = NitroEnclaveProver::new(config, None);
@@ -100,9 +138,7 @@ pub enum ProverConfig {
 /// };
 ///
 /// fn prove_multiple_reports() -> anyhow::Result<()> {
-///     set_prover_dev_mode(false);
-///     
-///     let config = ProverConfig::Succinct(Default::default());
+///     let config = ProverConfig::sp1();
 ///     let prover = NitroEnclaveProver::new(config, None);
 ///     
 ///     // Load multiple attestation reports
@@ -140,9 +176,8 @@ pub enum ProverConfig {
 ///     let contract_address: Address = "0x1234567890123456789012345678901234567890".parse()?;
 ///     let rpc_url = "https://1rpc.io/holesky";
 ///     let verifier = NitroEnclaveVerifierContract::dial(rpc_url, contract_address, None)?;
-///
-///     let config = ProverConfig::RiscZero(Default::default());
-///     let prover = NitroEnclaveProver::new(config, Some(verifier));
+
+///     let prover = NitroEnclaveProver::new(ProverConfig::sp1(), Some(verifier));
 ///     
 ///     let report_bytes = std::fs::read("samples/attestation_2.report")?;
 ///     
@@ -154,13 +189,15 @@ pub enum ProverConfig {
 ///     
 ///     println!("Aggregation Proof generated successfully!");
 ///     println!("{}", String::from_utf8_lossy(&result.encode_json()?));
-///     prover.verify_on_chain(&result)?;
+///     let result = prover.verify_on_chain(&result)?;
+///     println!("onchain verfication result: {:?}", result);
 ///     
 ///     Ok(())
 /// }
 /// ```
 ///
 pub struct NitroEnclaveProver {
+    cfg: ProverConfig,
     /// Optional smart contract for optimized certificate verification
     contract: Option<NitroEnclaveVerifierContract>,
     /// Configuration for remote proving services
@@ -193,39 +230,47 @@ impl NitroEnclaveProver {
     /// use aws_nitro_enclave_attestation_prover::{NitroEnclaveProver, ProverConfig};
     ///
     /// // Create with RISC0 backend
-    /// let config = ProverConfig::RiscZero(Default::default());
+    /// let config = ProverConfig::risc0();
     /// let prover = NitroEnclaveProver::new(config, None);
     /// ```
     pub fn new(cfg: ProverConfig, contract: Option<NitroEnclaveVerifierContract>) -> Self {
-        match cfg {
+        match &cfg.system {
             #[cfg(feature = "sp1")]
-            ProverConfig::Succinct(cfg) => {
+            ProverSystemConfig::Succinct(system_cfg) => {
                 use crate::program_sp1::{SP1_PROGRAM_AGGREGATOR, SP1_PROGRAM_VERIFIER};
-                if let Some(api_url) = &cfg.rpc_url {
+                if let Some(api_url) = &system_cfg.rpc_url {
                     std::env::set_var("NETWORK_RPC_URL", api_url);
                 }
-                if let Some(api_key) = &cfg.private_key {
+                if let Some(api_key) = &system_cfg.private_key {
                     std::env::set_var("NETWORK_API_KEY", api_key);
                 }
                 NitroEnclaveProver {
                     contract,
-                    remote_prover_config: cfg.try_into().map_err(|err| format!("{:?}", err)),
+                    remote_prover_config: system_cfg
+                        .clone()
+                        .try_into()
+                        .map_err(|err| format!("{:?}", err)),
+                    cfg,
                     verifier: Box::new(SP1_PROGRAM_VERIFIER.clone()),
                     aggregator: Box::new(SP1_PROGRAM_AGGREGATOR.clone()),
                 }
             }
             #[cfg(feature = "risc0")]
-            ProverConfig::RiscZero(cfg) => {
+            ProverSystemConfig::RiscZero(system_cfg) => {
                 use crate::program_risc0::{RISC0_PROGRAM_AGGREGATOR, RISC0_PROGRAM_VERIFIER};
-                if let Some(api_url) = &cfg.api_url {
+                if let Some(api_url) = &system_cfg.api_url {
                     std::env::set_var("BONSAI_API_URL", api_url);
                 }
-                if let Some(api_key) = &cfg.api_key {
+                if let Some(api_key) = &system_cfg.api_key {
                     std::env::set_var("BONSAI_API_KEY", api_key);
                 }
                 NitroEnclaveProver {
                     contract,
-                    remote_prover_config: cfg.try_into().map_err(|err| format!("{:?}", err)),
+                    remote_prover_config: system_cfg
+                        .clone()
+                        .try_into()
+                        .map_err(|err| format!("{:?}", err)),
+                    cfg,
                     verifier: Box::new(RISC0_PROGRAM_VERIFIER.clone()),
                     aggregator: Box::new(RISC0_PROGRAM_AGGREGATOR.clone()),
                 }
@@ -289,7 +334,7 @@ impl NitroEnclaveProver {
     /// use aws_nitro_enclave_attestation_prover::{NitroEnclaveProver, ProverConfig};
     ///
     /// fn main() -> anyhow::Result<()> {
-    ///     let prover = NitroEnclaveProver::new(ProverConfig::RiscZero(Default::default()), None);
+    ///     let prover = NitroEnclaveProver::new(ProverConfig::risc0(), None);
     ///     let program_id = prover.upload_program_images()?;
     ///     println!("Programs uploaded successfully: {:?}", program_id);
     ///     Ok(())
@@ -331,7 +376,7 @@ impl NitroEnclaveProver {
     /// use aws_nitro_enclave_attestation_prover::{NitroEnclaveProver, ProverConfig};
     ///
     /// fn main() -> anyhow::Result<()> {
-    ///     let prover = NitroEnclaveProver::new(ProverConfig::RiscZero(Default::default()), None);
+    ///     let prover = NitroEnclaveProver::new(ProverConfig::risc0(), None);
     ///     let reports = vec![std::fs::read("samples/attestation_1.report")?];
     ///     let inputs = prover.prepare_verifier_inputs(reports)?;
     ///     let proofs = prover.gen_multi_composite_proofs(&inputs)?;
@@ -375,7 +420,7 @@ impl NitroEnclaveProver {
     /// use aws_nitro_enclave_attestation_prover::{NitroEnclaveProver, ProverConfig};
     ///
     /// fn main() -> anyhow::Result<()> {
-    ///     let prover = NitroEnclaveProver::new(ProverConfig::RiscZero(Default::default()), None);
+    ///     let prover = NitroEnclaveProver::new(ProverConfig::risc0(), None);
     ///     let reports = vec![std::fs::read("samples/attestation_1.report")?];
     ///     let inputs = prover.prepare_verifier_inputs(reports)?;
     ///     let individual_proofs = prover.gen_multi_composite_proofs(&inputs)?;
@@ -418,10 +463,10 @@ impl NitroEnclaveProver {
     /// use aws_nitro_enclave_attestation_prover::{NitroEnclaveProver, ProverConfig};
     ///
     /// fn main() -> anyhow::Result<()> {
-    ///     let prover = NitroEnclaveProver::new(ProverConfig::RiscZero(Default::default()), None);
+    ///     let prover = NitroEnclaveProver::new(ProverConfig::risc0(), None);
     ///     let report_bytes = std::fs::read("samples/attestation_1.report")?;
     ///     let proof = prover.prove_attestation_report(report_bytes)?;
-    /// 
+    ///
     ///     // Submit to blockchain or save for later use
     ///     std::fs::write("proof.json", proof.encode_json()?)?;
     ///     Ok(())
@@ -458,12 +503,12 @@ impl NitroEnclaveProver {
     /// use aws_nitro_enclave_attestation_prover::{NitroEnclaveProver, ProverConfig};
     ///
     /// fn main() -> anyhow::Result<()> {
-    ///     let prover = NitroEnclaveProver::new(ProverConfig::Succinct(Default::default()), None);
+    ///     let prover = NitroEnclaveProver::new(ProverConfig::sp1(), None);
     ///     let reports = vec![
     ///         std::fs::read("samples/attestation_1.report")?,
     ///         std::fs::read("samples/attestation_2.report")?,
     ///     ];
-    /// 
+    ///
     ///     let aggregated_proof = prover.prove_multiple_reports(reports)?;
     ///     println!("Generated aggregated proof: {:?}", aggregated_proof);
     ///     Ok(())
@@ -520,12 +565,12 @@ impl NitroEnclaveProver {
     /// use aws_nitro_enclave_attestation_prover::{NitroEnclaveProver, ProverConfig};
     ///
     /// fn main() -> anyhow::Result<()> {
-    ///     let prover = NitroEnclaveProver::new(ProverConfig::RiscZero(Default::default()), None);
+    ///     let prover = NitroEnclaveProver::new(ProverConfig::risc0(), None);
     ///     let reports = vec![
     ///         std::fs::read("attestation1.report")?,
     ///         std::fs::read("attestation2.report")?,
     ///     ];
-    /// 
+    ///
     ///     let inputs = prover.prepare_verifier_inputs(reports)?;
     ///     println!("Prepared {} inputs for verification", inputs.len());
     ///     Ok(())
@@ -545,11 +590,11 @@ impl NitroEnclaveProver {
             cert_digests.push(cert_chain.digest().to_vec());
         }
 
-        let trusted_certs_lengths;
+        let trusted_certs_prefix_lengths;
         match &self.contract {
             Some(verifier_contract) => {
                 // Query smart contract for certificate cache information
-                trusted_certs_lengths =
+                trusted_certs_prefix_lengths =
                     block_on(verifier_contract.batch_query_cert_cache(cert_digests))?;
             }
             None => {
@@ -562,27 +607,28 @@ impl NitroEnclaveProver {
                     .as_secs();
                 for report in &parsed_reports {
                     let report_timestamp = report.doc().timestamp / 1000;
-                    if report_timestamp + 3600 < current_time {
+                    if report_timestamp + 3600 * 3 < current_time {
                         tracing::warn!(
                             "Report signed {} seconds ago, may indicate verification failure.",
                             current_time - report_timestamp
                         );
                     }
                 }
-                // Trust root certificate by default
-                trusted_certs_lengths = vec![1_u8; parsed_reports.len()];
+
+                trusted_certs_prefix_lengths =
+                    vec![self.cfg.default_trusted_certs_prefix_length; parsed_reports.len()];
             }
         }
 
         assert!(
-            trusted_certs_lengths.len() == raw_reports.len(),
+            trusted_certs_prefix_lengths.len() == raw_reports.len(),
             "Trusted certificate lengths count mismatch"
         );
 
         // Build verifier inputs with trusted certificate information
         let verifier_inputs = raw_reports
             .into_iter()
-            .zip(trusted_certs_lengths)
+            .zip(trusted_certs_prefix_lengths)
             .map(|(report_bytes, trusted_cert_prefix_len)| VerifierInput {
                 trustedCertsPrefixLen: trusted_cert_prefix_len,
                 attestationReport: report_bytes.into(),

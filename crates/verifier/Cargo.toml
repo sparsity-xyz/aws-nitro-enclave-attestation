@@ -4,6 +4,9 @@ version.workspace = true
 authors.workspace = true
 edition.workspace = true
 
+[lib]
+doctest = false
+
 [features]
 sp1 = ["x509-verifier-rust-crypto/sp1"]
 risc0 = ["x509-verifier-rust-crypto/risc0"]

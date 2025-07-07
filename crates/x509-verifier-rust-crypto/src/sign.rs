@@ -115,7 +115,7 @@ pub fn ec_decode_sig(sig: &[u8], params: KeyAlgoParams) -> anyhow::Result<Vec<u8
                 ret.append(&mut sig_slice);
             }
         }
-        _ => return Err(anyhow!("DER is not of SEQUENCE type")),
+        content => return Err(anyhow!("DER is not of SEQUENCE type: {:?}", content)),
     }
 
     Ok(ret)
