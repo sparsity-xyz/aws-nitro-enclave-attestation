@@ -291,34 +291,37 @@ $ forge script script/NitroEnclaveVerifier.s.sol --rpc-url http://localhost:8545
 
 This section provides comprehensive performance metrics for both RISC0 and SP1 proving systems, demonstrating the efficiency gains from certificate caching and batch verification.
 
+> [!NOTE]
+> Proving a single Nitro Enclave attestation report requires approximately 300M cycles, primarily due to the need to verify certificate chains and document correctness through 6 P384 signature verifications, which constitute the majority of the computational overhead. To reduce ZKP proving costs, we have implemented caching at the contract level, which can reduce P384 signature verifications for a single report to as few as 1 verification. This caching system ensures security while supporting revocation operations - when a certificate is revoked, all related leaf certificate caches are invalidated. The caching system only optimizes certificate chain relationship verification; individual certificate validation (such as time validity) is still performed. The specific optimization results are shown below.
+
 ### Proving Cycles by Cached Certificate Count
 
 The following table shows how certificate caching reduces computational overhead. When more certificates are cached (trusted certs prefix length), fewer certificates need to be verified in the ZK circuit, resulting in lower cycle counts:
 
-#### Risc0
+#### RISC0
 
 | Cached Certificates | Proving Cycles | Cycles Improvement |
 | ------------------- | -------------- | ------------------ |
-| 0 (cahce disabled)  | 390,594,560    | Baseline           |
+| 0 (cache disabled)  | 390,594,560    | Baseline           |
 | 1                   | 326,107,136    | 16.5% reduction    |
 | 2                   | 261,095,424    | 33.2% reduction    |
 | 3                   | 196,083,712    | 49.8% reduction    |
 | 4                   | 131,072,000    | 66.4% reduction    |
 | 5                   | 66,060,288     | 83.1% reduction    |
 
-#### Succinct
-| Cached Certificate | Proving Cycles | Cycles Improvement |
-| ------------------ | -------------- | ------------------ |
-| 0 (cahce disabled) | 285,573,454    | Baseline           |
-| 1                  | 238,129,471    | 16.6% reduction    |
-| 2                  | 190,785,832    | 33.2% reduction    |
-| 3                  | 143,767,478    | 49.7% reduction    |
-| 4                  | 96,838,778     | 66.1% reduction    |
-| 5                  | 49,534,287     | 82.6% reduction    |
+#### SP1 (Succinct)
+| Cached Certificates | Proving Cycles | Cycles Improvement |
+| ------------------- | -------------- | ------------------ |
+| 0 (cache disabled)  | 285,573,454    | Baseline           |
+| 1                   | 238,129,471    | 16.6% reduction    |
+| 2                   | 190,785,832    | 33.2% reduction    |
+| 3                   | 143,767,478    | 49.7% reduction    |
+| 4                   | 96,838,778     | 66.1% reduction    |
+| 5                   | 49,534,287     | 82.6% reduction    |
 
 ### Proving Cycles for Proof Aggregation
 
-The following table shows how the addtionally cycles used for the aggregation.
+The following table shows the additional cycles used for aggregation.
 
 #### Risc0
 | Aggregated Reports | Proving Cycles | Proving Cycles per Report | Cycles Improvement |
