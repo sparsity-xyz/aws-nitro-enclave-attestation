@@ -14,7 +14,7 @@ pub fn verify_attestation_report(input: &VerifierInput) -> anyhow::Result<Verifi
     let report = AttestationReport::parse(&input.attestationReport)?;
 
     let doc = report.doc();
-    let cert_chain = report.authenticate(input.trustedCertsLen as usize, doc.timestamp / 1000)?;
+    let cert_chain = report.authenticate(input.trustedCertsPrefixLen as usize, doc.timestamp / 1000)?;
 
     let user_data = get_option_bytes(&doc.user_data);
     let nonce = get_option_bytes(&doc.nonce);
@@ -32,7 +32,7 @@ pub fn verify_attestation_report(input: &VerifierInput) -> anyhow::Result<Verifi
     let output = VerifierJournal {
         result: VerificationResult::Success,
         certs: cert_chain.digest().to_vec(),
-        trustedCertsLen: input.trustedCertsLen,
+        trustedCertsPrefixLen: input.trustedCertsPrefixLen,
         userData: user_data.into(),
         nonce: nonce.into(),
         publicKey: public_key.into(),

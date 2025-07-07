@@ -110,11 +110,11 @@ where
         &self,
         input: &Self::Input,
         raw_proof_type: RawProofType,
-        encoded_proof: Option<&[&Bytes]>,
+        encoded_composite_proofs: Option<&[&Bytes]>,
     ) -> anyhow::Result<RawProof> {
         let mut env = ExecutorEnv::builder();
-        if let Some(encoded_proofs) = encoded_proof {
-            for proof in encoded_proofs {
+        if let Some(encoded_composite_proofs) = encoded_composite_proofs {
+            for proof in encoded_composite_proofs {
                 let item = bincode::deserialize::<InnerReceipt>(proof)?;
                 env.add_assumption(item);
             }

@@ -157,12 +157,12 @@ where
         &self,
         input: &Self::Input,
         raw_proof_type: RawProofType,
-        encoded_proofs: Option<&[&Bytes]>,
+        encoded_composite_proofs: Option<&[&Bytes]>,
     ) -> anyhow::Result<RawProof> {
         let mut stdin = SP1Stdin::new();
         stdin.write_vec(input.abi_encode());
-        if let Some(encoded_proofs) = encoded_proofs {
-            for proof in encoded_proofs {
+        if let Some(encoded_composite_proofs) = encoded_composite_proofs {
+            for proof in encoded_composite_proofs {
                 let (proof, vk) = bincode::deserialize::<(SP1Proof, SP1VerifyingKey)>(&proof)?;
                 let SP1Proof::Compressed(proof) = proof else {
                     return Err(anyhow!("Expected a compressed SP1 proof"));

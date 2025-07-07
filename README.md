@@ -143,7 +143,7 @@ async fn prove_with_contract() -> anyhow::Result<()> {
 ```
 </details>
 
-## Getting Started
+## Getting Started with CLI Tools
 
 ### Prerequisites
 
@@ -170,11 +170,6 @@ $ cargo run prove --sp1 --report samples/attestation_1.report --report samples/a
 # Verify proof on-chain
 $ cargo run proof verify-on-chain --proof aggregated_proof.json
 ```
-
-### Performance Optimization
-
-> [!NOTE]
-> Single attestation report verification requires approximately 300M cycles. We recommend specifying the NitroEnclaveVerifier contract address to enable certificate signature verification caching, which can reduce cycle usage to as low as 50M cycles.
 
 ### Inspect Attestation Reports
 

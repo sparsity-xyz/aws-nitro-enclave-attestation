@@ -11,6 +11,12 @@ use aws_nitro_enclave_attestation_verifier::stub::{VerifierJournal, ZkCoProcesso
 
 use crate::{OnchainProof, ProofType};
 
+#[derive(Debug, Clone)]
+pub enum OnchainProofVerifyResult {
+    Single(VerifierJournal),
+    Batch(Vec<VerifierJournal>),
+}
+
 #[derive(Clone)]
 pub struct NitroEnclaveVerifierContract {
     contract: Address,
@@ -64,7 +70,10 @@ impl NitroEnclaveVerifierContract {
         Ok(result)
     }
 
-    pub async fn verify_proof(&self, proof: &OnchainProof) -> anyhow::Result<Vec<VerifierJournal>> {
+    pub async fn verify_proof(
+        &self,
+        proof: &OnchainProof,
+    ) -> anyhow::Result<OnchainProofVerifyResult> {
         if proof.onchain_proof.len() == 0 {
             return Err(anyhow!(
                 "Proof does not contain an on-chain proof, unable to verify on-chain."
@@ -76,9 +85,11 @@ impl NitroEnclaveVerifierContract {
 
         Ok(match proof.proof_type {
             ProofType::Verifier => {
-                vec![self.verify(zk, proof_bytes, journal).await?]
+                OnchainProofVerifyResult::Single(self.verify(zk, proof_bytes, journal).await?)
             }
-            ProofType::Aggregator => self.batch_verify(zk, proof_bytes, journal).await?,
+            ProofType::Aggregator => {
+                OnchainProofVerifyResult::Batch(self.batch_verify(zk, proof_bytes, journal).await?)
+            }
         })
     }
 
