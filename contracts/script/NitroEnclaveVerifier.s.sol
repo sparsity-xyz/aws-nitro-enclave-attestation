@@ -82,6 +82,13 @@ contract NitroEnclaveVerifierScript is Script {
         saveDeployed("VERIFIER", address(verifier));
     }
 
+    function deployAll(string memory rootCert, string memory sp1Program, string memory risc0Program) public {
+        deployVerifier();
+        setRootCert(rootCert);
+        setZkVerifier(sp1Program);
+        setZkVerifier(risc0Program);
+    }
+
     function setRootCert(string memory path) public {
         INitroEnclaveVerifier verifier = INitroEnclaveVerifier(readDeployed("VERIFIER"));
         bytes memory _rootCert = vm.readFileBinary(path);

@@ -1,7 +1,7 @@
 use alloy_primitives::{Bytes, B256};
 use alloy_sol_types::{SolType, SolValue};
 use anyhow::anyhow;
-use aws_nitro_enclave_attestation_verifier::stub::ZkCoProcessorType;
+use aws_nitro_enclave_attestation_verifier::stub::{ZkCoProcessorConfig, ZkCoProcessorType};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 
 use crate::program::Program;
@@ -71,6 +71,35 @@ pub struct ProgramId {
     pub verifier_id: B256,
     pub verifier_proof_id: B256,
     pub aggregator_id: B256,
+}
+
+impl ProgramId {
+    pub fn verify(&self, zk_config: &ZkCoProcessorConfig) -> anyhow::Result<()> {
+        if zk_config.aggregatorId != self.aggregator_id
+            || zk_config.verifierId != self.verifier_id
+            || zk_config.verifierProofId != self.verifier_proof_id
+        {
+            return Err(anyhow!(
+                "Program ID mismatch with on-chain config: want: {{verifierId={}, verifierProofId={}, aggregatorId={}}}, got: {{verifierId={}, verifierProofId={}, aggregatorId={}}})",
+                zk_config.verifierId,
+                zk_config.verifierProofId,
+                zk_config.aggregatorId,
+                self.verifier_id,
+                self.verifier_proof_id,
+                self.aggregator_id,
+            ));
+        }
+        Ok(())
+    }
+
+    pub fn encode_json(&self, zk: ZkCoProcessorType) -> anyhow::Result<Vec<u8>> {
+        let val = serde_json::to_value(self)?;
+        let mut map = serde_json::Map::new();
+        map.insert("program_id".into(), val);
+        map.insert("zktype".into(), serde_json::to_value(&zk)?);
+        serde_json::to_vec_pretty(&map)
+            .map_err(|e| anyhow!("Failed to serialize program ID: {}", e))
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize)]

@@ -1,0 +1,8 @@
+{
+  "program_id": {
+    "aggregator_id": "0x4d4bd302de3ae57d7de3a37fb6c27c6f6b217e6815af737dacb4ca6e45652494",
+    "verifier_id": "0xe012a57f515c0bd110db51b2887b36d874ad8d0f302d7f2c0562beb74d6b6729",
+    "verifier_proof_id": "0xe012a57f515c0bd110db51b2887b36d874ad8d0f302d7f2c0562beb74d6b6729"
+  },
+  "zktype": "RiscZero"
+}

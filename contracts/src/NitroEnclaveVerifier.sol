@@ -37,7 +37,7 @@ import {console} from "forge-std/console.sol";
  */
 contract NitroEnclaveVerifier is Ownable, INitroEnclaveVerifier {
     /// @dev Configuration mapping for each supported ZK coprocessor type
-    mapping(ZkCoProcessorType => ZkCoProcessorConfig) zkConfig;
+    mapping(ZkCoProcessorType => ZkCoProcessorConfig) public zkConfig;
     
     /// @dev Mapping of trusted intermediate certificate hashes (excludes root certificate)
     mapping(bytes32 trustedCertHash => bool) public trustedIntermediateCerts;
@@ -149,6 +149,15 @@ contract NitroEnclaveVerifier is Ownable, INitroEnclaveVerifier {
         onlyOwner
     {
         zkConfig[_zkCoProcessor] = _config;
+    }
+
+    /**
+     * @dev Retrieves the configuration for a specific coprocessor
+     * @param _zkCoProcessor Type of ZK coprocessor (RiscZero or Succinct)
+     * @return ZkCoProcessorConfig Configuration parameters including program IDs and verifier address
+     */
+    function getZkConfig(ZkCoProcessorType _zkCoProcessor) external view returns (ZkCoProcessorConfig memory) {
+        return zkConfig[_zkCoProcessor];
     }
 
     /**

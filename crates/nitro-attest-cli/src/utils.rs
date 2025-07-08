@@ -1,39 +1,54 @@
+//! Utility modules for CLI argument parsing and configuration.
+//!
+//! This module contains shared argument structures and helper functions
+//! used across different CLI commands for configuring provers and smart contracts.
+
 use alloy_primitives::Address;
-use anyhow::anyhow;
+use anyhow::{anyhow, bail};
 use aws_nitro_enclave_attestation_prover::{
     NitroEnclaveProver, NitroEnclaveVerifierContract, ProverConfig,
 };
 use clap::Args;
 
+/// Command-line arguments for configuring zero-knowledge proof system settings.
+/// 
+/// Supports both RISC0 and SP1 proof systems with their respective configuration options.
+/// Only one prover type should be specified at a time.
 #[derive(Args, Clone)]
 pub struct ProverArgs {
-    /// Use the risc0 zkvm
     #[cfg(feature = "risc0")]
+    /// Use the RISC0 zkVM for proof generation
     #[arg(long)]
     pub risc0: bool,
 
-    /// Use the sp1 zkvm
     #[cfg(feature = "sp1")]
+    /// Use the SP1 zkVM for proof generation
     #[arg(long)]
     pub sp1: bool,
 
+    /// Enable development mode for mock proof generation
     #[arg(long, default_value = "false", env = "DEV_MODE")]
     pub dev: bool,
 
+    /// Private key for SP1 network prover
     #[arg(long, env = "NETWORK_PRIVATE_KEY")]
     pub sp1_private_key: Option<String>,
 
-    #[arg(long, env = "NETWORK_RPC_URL")]
+    /// RPC URL for SP1 network connection
+    #[arg(long, env = "NETWORK_RPC_URL", default_value = "https://rpc.production.succinct.xyz")]
     pub sp1_rpc_url: Option<String>,
 
+    /// API URL for RISC0 Bonsai service
     #[arg(long, env = "BONSAI_API_URL", default_value = "https://api.bonsai.xyz")]
     pub risc0_api_url: Option<String>,
 
+    /// API key for RISC0 Bonsai service authentication
     #[arg(long, env = "BONSAI_API_KEY")]
     pub risc0_api_key: Option<String>,
 }
 
 impl ProverArgs {
+    /// Creates a prover configuration based on the specified arguments.
     pub fn prover_config(&self) -> anyhow::Result<ProverConfig> {
         #[cfg(all(feature = "sp1", feature = "risc0"))]
         if self.sp1 && self.risc0 {
@@ -60,9 +75,10 @@ impl ProverArgs {
             }));
         }
 
-        return Err(anyhow!("No prover specified. "));
+        bail!("No prover specified. Use --risc0 or --sp1 to select a proof system.");
     }
 
+    /// Creates a new `NitroEnclaveProver` instance with the configured settings.
     pub fn new_prover(
         &self,
         contract: Option<NitroEnclaveVerifierContract>,
@@ -71,10 +87,13 @@ impl ProverArgs {
     }
 }
 
+/// Command-line arguments for configuring smart contract interaction.
+/// 
+/// Used for on-chain proof verification and other blockchain operations.
 #[derive(Args, Clone)]
 pub struct ContractArgs {
     /// The address of the Nitro Enclave Verifier contract
-    #[arg(long, env = "VERIFIER")]
+    #[arg(long, env = "CONTRACT")]
     pub contract: Option<Address>,
 
     /// The RPC URL to connect to the Ethereum network
@@ -83,10 +102,12 @@ pub struct ContractArgs {
 }
 
 impl ContractArgs {
+    /// Checks if the contract configuration is incomplete.
     pub fn empty(&self) -> bool {
         self.contract.is_none() || self.rpc_url.is_none()
     }
 
+    /// Creates a contract interface if all required parameters are provided.
     pub fn stub(&self) -> anyhow::Result<Option<NitroEnclaveVerifierContract>> {
         if self.empty() {
             return Ok(None);

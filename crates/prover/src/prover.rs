@@ -7,7 +7,7 @@ use crate::{
     RawProof, RawProofType,
 };
 use alloy_primitives::Bytes;
-use anyhow::anyhow;
+use anyhow::{anyhow, bail, Context};
 use aws_nitro_enclave_attestation_verifier::{
     stub::{
         BatchVerifierInput, BatchVerifierJournal, VerifierInput, VerifierJournal, ZkCoProcessorType,
@@ -35,6 +35,8 @@ use aws_nitro_enclave_attestation_verifier::{
 #[derive(Debug, Clone)]
 pub struct ProverConfig {
     pub default_trusted_certs_prefix_length: u8,
+    pub skip_time_validity_check: bool,
+    pub skip_contract_program_id_check: bool,
     pub system: ProverSystemConfig,
 }
 
@@ -48,6 +50,8 @@ impl ProverConfig {
     pub fn risc0_with(cfg: crate::program_risc0::RiscZeroProverConfig) -> Self {
         Self {
             default_trusted_certs_prefix_length: Self::default_trusted_certs_prefix_length(),
+            skip_time_validity_check: Self::skip_time_validity_check(),
+            skip_contract_program_id_check: Self::skip_contract_program_id_check(),
             system: ProverSystemConfig::RiscZero(cfg),
         }
     }
@@ -61,6 +65,8 @@ impl ProverConfig {
     pub fn sp1_with(cfg: crate::program_sp1::SP1ProverConfig) -> Self {
         Self {
             default_trusted_certs_prefix_length: Self::default_trusted_certs_prefix_length(),
+            skip_time_validity_check: Self::skip_time_validity_check(),
+            skip_contract_program_id_check: Self::skip_contract_program_id_check(),
             system: ProverSystemConfig::Succinct(cfg),
         }
     }
@@ -70,6 +76,20 @@ impl ProverConfig {
             .ok()
             .and_then(|s| s.parse::<u8>().ok())
             .unwrap_or(1_u8)
+    }
+
+    fn skip_time_validity_check() -> bool {
+        std::env::var("SKIP_TIME_VALIDITY_CHECK")
+            .ok()
+            .and_then(|s| s.parse::<bool>().ok())
+            .unwrap_or(false)
+    }
+
+    fn skip_contract_program_id_check() -> bool {
+        std::env::var("SKIP_CONTRACT_PROGRAM_ID_CHECK")
+            .ok()
+            .and_then(|s| s.parse::<bool>().ok())
+            .unwrap_or(false)
     }
 }
 
@@ -591,32 +611,59 @@ impl NitroEnclaveProver {
         }
 
         let trusted_certs_prefix_lengths;
+        let max_time_diff;
         match &self.contract {
             Some(verifier_contract) => {
+                // make sure the zk config aligned
+                let zk_config = block_on(verifier_contract.zk_config(self.verifier.zktype()))?;
+                max_time_diff = block_on(verifier_contract.max_time_diff())?;
+
+                let program_id = self.get_program_id();
+                let verify_result = program_id.verify(&zk_config).with_context(|| {
+                    format!("Failed to verify zkconfig for {:?}", self.verifier.zktype())
+                });
+                if let Err(verify_err) = verify_result {
+                    if !self.cfg.skip_contract_program_id_check {
+                        bail!(
+                            "Program ID verification failed: {:?}. Set SKIP_CONTRACT_PROGRAM_ID_CHECK=true to ignore this check.",
+                            verify_err
+                        );
+                    } else {
+                        tracing::warn!("Program ID verification failed: {:?}.", verify_err);
+                    }
+                }
+
                 // Query smart contract for certificate cache information
                 trusted_certs_prefix_lengths =
                     block_on(verifier_contract.batch_query_cert_cache(cert_digests))?;
             }
             None => {
                 tracing::warn!("Contract not provided, may lead to attestation failures and increased costs. Not recommended for production.");
-
-                // Validate report timestamps when no contract is available
-                let current_time = SystemTime::now()
-                    .duration_since(UNIX_EPOCH)
-                    .unwrap()
-                    .as_secs();
-                for report in &parsed_reports {
-                    let report_timestamp = report.doc().timestamp / 1000;
-                    if report_timestamp + 3600 * 3 < current_time {
-                        tracing::warn!(
-                            "Report signed {} seconds ago, may indicate verification failure.",
-                            current_time - report_timestamp
-                        );
-                    }
-                }
-
+                max_time_diff = 3600 * 3;
                 trusted_certs_prefix_lengths =
                     vec![self.cfg.default_trusted_certs_prefix_length; parsed_reports.len()];
+            }
+        }
+
+        // Validate report timestamps when no contract is available
+        let current_time = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_secs();
+        for (idx, report) in parsed_reports.iter().enumerate() {
+            let report_timestamp = report.doc().timestamp / 1000;
+            if report_timestamp + max_time_diff < current_time {
+                if self.cfg.skip_time_validity_check {
+                    tracing::warn!(
+                        "Report[{idx}] signed {} seconds ago, ignoring time validity check.",
+                        current_time - report_timestamp
+                    );
+                } else {
+                    bail!(
+                        "Report[{idx}] signed {} seconds ago, may indicate verification failure. set `SKIP_TIME_VALIDITY_CHECK=true` to ignore this check.",
+                        current_time - report_timestamp
+                    );
+                }
             }
         }
 

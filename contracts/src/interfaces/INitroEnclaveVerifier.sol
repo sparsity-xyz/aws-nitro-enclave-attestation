@@ -20,7 +20,7 @@ enum ZkCoProcessorType {
 struct ZkCoProcessorConfig {
     // Program ID for single attestation verification
     bytes32 verifierId;       
-    // Expected verifier key/proof ID for batch verification
+    // Verifier Proof ID used for batch proof verification in aggregator
     bytes32 verifierProofId;  
     // Program ID for batch/aggregated verification
     bytes32 aggregatorId;     
@@ -196,6 +196,13 @@ interface INitroEnclaveVerifier {
      * - Must specify valid coprocessor type and configuration
      */
     function setZkConfiguration(ZkCoProcessorType _zkCoProcessor, ZkCoProcessorConfig memory _config) external;
+
+    /**
+     * @dev Retrieves the configuration for a specific coprocessor
+     * @param _zkCoProcessor Type of ZK coprocessor (RiscZero or Succinct)
+     * @return ZkCoProcessorConfig Configuration parameters including program IDs and verifier address
+     */
+    function getZkConfig(ZkCoProcessorType _zkCoProcessor) external view returns (ZkCoProcessorConfig memory);
 
     /**
      * @dev Verifies multiple attestation reports in a single batch operation

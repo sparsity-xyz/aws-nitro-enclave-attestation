@@ -7,7 +7,9 @@ use alloy_rpc_types::TransactionRequest;
 use alloy_signer_local::PrivateKeySigner;
 use alloy_sol_types::SolCall;
 use anyhow::{anyhow, Context};
-use aws_nitro_enclave_attestation_verifier::stub::{VerifierJournal, ZkCoProcessorType};
+use aws_nitro_enclave_attestation_verifier::stub::{
+    INitroEnclaveVerifier::*, VerifierJournal, ZkCoProcessorConfig, ZkCoProcessorType,
+};
 
 use crate::{OnchainProof, ProofType};
 
@@ -54,7 +56,11 @@ impl NitroEnclaveVerifierContract {
         let tx = TransactionRequest::default()
             .with_call(call)
             .to(self.contract);
-        let result = self.client.call(tx).await?;
+        let result = self
+            .client
+            .call(tx)
+            .await
+            .with_context(|| format!("contract={:?}", self.contract))?;
         let result = T::abi_decode_returns(&result)?;
         Ok(result)
     }
@@ -99,7 +105,6 @@ impl NitroEnclaveVerifierContract {
         proof: Bytes,
         journal: Bytes,
     ) -> anyhow::Result<VerifierJournal> {
-        use aws_nitro_enclave_attestation_verifier::stub::INitroEnclaveVerifier::*;
         let call = verifyCall {
             output: journal.clone(),
             zkCoprocessor: zk,
@@ -117,7 +122,6 @@ impl NitroEnclaveVerifierContract {
         proof: Bytes,
         journal: Bytes,
     ) -> anyhow::Result<Vec<VerifierJournal>> {
-        use aws_nitro_enclave_attestation_verifier::stub::INitroEnclaveVerifier::*;
         let call = batchVerifyCall {
             output: journal,
             zkCoprocessor: zk,
@@ -127,15 +131,22 @@ impl NitroEnclaveVerifierContract {
     }
 
     pub async fn root_cert(&self) -> anyhow::Result<B256> {
-        use aws_nitro_enclave_attestation_verifier::stub::INitroEnclaveVerifier::*;
         Ok(self.call(&rootCertCall {}).await?)
+    }
+
+    pub async fn zk_config(&self, zk: ZkCoProcessorType) -> anyhow::Result<ZkCoProcessorConfig> {
+        let call = getZkConfigCall { _zkCoProcessor: zk };
+        self.call(&call).await
+    }
+
+    pub async fn max_time_diff(&self) -> anyhow::Result<u64> {
+        Ok(self.call(&maxTimeDiffCall {}).await?)
     }
 
     pub async fn batch_query_cert_cache(
         &self,
         certs_digests: Vec<Vec<B256>>,
     ) -> anyhow::Result<Vec<u8>> {
-        use aws_nitro_enclave_attestation_verifier::stub::INitroEnclaveVerifier::*;
         if certs_digests.is_empty() {
             return Ok(vec![]);
         }
