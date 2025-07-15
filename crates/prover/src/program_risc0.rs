@@ -45,8 +45,8 @@ impl TryFrom<RiscZeroProverConfig> for RemoteProverConfig {
     type Error = anyhow::Error;
     fn try_from(value: RiscZeroProverConfig) -> anyhow::Result<Self> {
         Ok(RemoteProverConfig {
-            api_url: value.api_url.ok_or_else(|| anyhow!("missing api url"))?,
-            api_key: value.api_key.ok_or_else(|| anyhow!("missing api key"))?,
+            api_url: value.api_url.ok_or_else(|| anyhow!("missing BONSAI_API_URL"))?,
+            api_key: value.api_key.ok_or_else(|| anyhow!("missing BONSAI_API_KEY"))?,
         })
     }
 }

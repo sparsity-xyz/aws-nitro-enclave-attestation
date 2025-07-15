@@ -47,3 +47,5 @@ _cli upload --risc0 --out samples/risc0_program_id.json
 
 RPC_URL=$HOLESKY_RPC_URL _script 'deployAll(string,string,string)' ../samples/aws_root.der ../samples/sp1_program_id.json ../samples/risc0_program_id.json
 RPC_URL=$SEPOLIA_RPC_URL _script 'deployAll(string,string,string)' ../samples/aws_root.der ../samples/sp1_program_id.json ../samples/risc0_program_id.json
+
+_summary

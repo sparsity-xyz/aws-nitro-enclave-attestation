@@ -272,7 +272,7 @@ $ forge script script/NitroEnclaveVerifier.s.sol --rpc-url $RPC_URL --private-ke
 
 | ZkType | Verifier ID                                                        | Verifier Proof ID                                                  | Aggregator ID                                                      |
 | ------ | ------------------------------------------------------------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------ |
-| Risc0  | 0xe012a57f515c0bd110db51b2887b36d874ad8d0f302d7f2c0562beb74d6b6729 | 0xe012a57f515c0bd110db51b2887b36d874ad8d0f302d7f2c0562beb74d6b6729 | 0x4d4bd302de3ae57d7de3a37fb6c27c6f6b217e6815af737dacb4ca6e45652494 |
+| Risc0  | 0xb01c0174aed6bd02aecec2671739e004503f6482f4e7298e71129f9e0aea309e | 0xb01c0174aed6bd02aecec2671739e004503f6482f4e7298e71129f9e0aea309e | 0xb5bb99768a18b5ba530ef4f7c13fc8f5130c1ed20db8190d11d8ab1f5f4d9dc5 |
 | SP1    | 0x00d0c956f7d68e9d71577d9643713270a8d0bdfaad0645292186ce480c81b409 | 0x7bab64685ca7a375c8b2ef2a0a271337d5ef8546a4141934909c0d4309b4810c | 0x00a5cdc2fdacf04a609e6bb386b9ecf3339ef230f1384d095fe2dd0af4c46c22 |
 
 ## Development

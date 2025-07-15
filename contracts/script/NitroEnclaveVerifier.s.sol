@@ -37,6 +37,17 @@ contract NitroEnclaveVerifierScript is Script {
         revert(string(abi.encodePacked("No deployment found for ", key, " from file or env, chainid:", block.chainid.toString())));
     }
 
+    function isDeployed(string memory key) internal view returns (bool) {
+        string memory fp = string(abi.encodePacked("deployments/", block.chainid.toString(), ".json"));
+        if (vm.exists(fp)) {
+            string memory deployment = vm.readFile(fp);
+            string memory jsonKey = string(abi.encodePacked(".", key));
+            return vm.keyExistsJson(deployment, jsonKey);
+        }
+
+        return false;
+    }
+
     function saveDeployed(string memory key, address addr) internal {
         string memory fp = string(abi.encodePacked("deployments/", block.chainid.toString(), ".json"));
         string memory deployment = "{}";
@@ -83,8 +94,10 @@ contract NitroEnclaveVerifierScript is Script {
     }
 
     function deployAll(string memory rootCert, string memory sp1Program, string memory risc0Program) public {
-        deployVerifier();
-        setRootCert(rootCert);
+        if (!isDeployed("VERIFIER")) {
+            deployVerifier();
+            setRootCert(rootCert);
+        }
         setZkVerifier(sp1Program);
         setZkVerifier(risc0Program);
     }
