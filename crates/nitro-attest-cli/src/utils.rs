@@ -35,7 +35,7 @@ pub struct ProverArgs {
     pub sp1_private_key: Option<String>,
 
     /// RPC URL for SP1 network connection
-    #[arg(long, env = "NETWORK_RPC_URL", default_value = "https://rpc.production.succinct.xyz")]
+    #[arg(long)]
     pub sp1_rpc_url: Option<String>,
 
     /// API URL for RISC0 Bonsai service

@@ -88,7 +88,7 @@ pub trait Program: Send + Sync {
 #[derive(Clone)]
 pub struct RemoteProverConfig {
     /// The API endpoint URL for the remote proving service
-    pub api_url: String,
+    pub api_url: Option<String>,
     /// The authentication key for accessing the remote proving service
     pub api_key: String,
 }

@@ -6,7 +6,7 @@ use anyhow::anyhow;
 use aws_nitro_enclave_attestation_verifier::stub::{
     BatchVerifierInput, BatchVerifierJournal, VerifierInput, VerifierJournal, ZkCoProcessorType,
 };
-use bonsai_sdk::blocking::Client;
+use bonsai_sdk::{blocking::Client, API_URL_ENVVAR};
 use lazy_static::lazy_static;
 use risc0_ethereum_contracts::groth16;
 use risc0_methods::{
@@ -45,7 +45,7 @@ impl TryFrom<RiscZeroProverConfig> for RemoteProverConfig {
     type Error = anyhow::Error;
     fn try_from(value: RiscZeroProverConfig) -> anyhow::Result<Self> {
         Ok(RemoteProverConfig {
-            api_url: value.api_url.ok_or_else(|| anyhow!("missing BONSAI_API_URL"))?,
+            api_url: value.api_url,
             api_key: value.api_key.ok_or_else(|| anyhow!("missing BONSAI_API_KEY"))?,
         })
     }
@@ -101,7 +101,14 @@ where
     }
 
     fn upload_image(&self, cfg: &RemoteProverConfig) -> anyhow::Result<()> {
-        let client = Client::from_parts(cfg.api_url.clone(), cfg.api_key.clone(), VERSION)?;
+        let api_url = match cfg.api_url.clone() {
+            Some(api_url) => Ok(api_url),
+            None => match std::env::var(API_URL_ENVVAR) {
+                Ok(val) => Ok(val),
+                Err(_) => Err(anyhow!("missing env {}", API_URL_ENVVAR)),
+            }
+        }?;
+        let client = Client::from_parts(api_url, cfg.api_key.clone(), VERSION)?;
         let image_id = Digest::new(self.image_id);
         client.upload_img(&image_id.to_string(), self.elf.to_vec())?;
         Ok(())
