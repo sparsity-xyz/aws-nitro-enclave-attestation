@@ -1,0 +1,162 @@
+{
+  "chains": {
+    "sepolia": {
+      "chainId": 11155111,
+      "rpc": "https://1rpc.io/sepolia",
+      "explorer": "https://sepolia.etherscan.io",
+      "testnet": true
+    },
+    "mainnet": {
+      "chainId": 1,
+      "rpc": "https://1rpc.io/eth",
+      "explorer": "https://etherscan.io",
+      "testnet": false
+    },
+    "base": {
+      "chainId": 8453,
+      "rpc": "https://mainnet.base.org",
+      "explorer": "https://basescan.org",
+      "testnet": false
+    },
+    "base-sepolia": {
+      "chainId": 84532,
+      "rpc": "https://sepolia.base.org",
+      "explorer": "https://sepolia.basescan.org",
+      "testnet": true
+    },
+    "arbitrum": {
+      "chainId": 42161,
+      "rpc": "https://arb1.arbitrum.io/rpc",
+      "explorer": "https://arbiscan.io",
+      "testnet": false
+    },
+    "arbitrum-sepolia": {
+      "chainId": 421614,
+      "rpc": "https://sepolia-rollup.arbitrum.io/rpc",
+      "explorer": "https://sepolia.arbiscan.io",
+      "testnet": true
+    },
+    "optimism": {
+      "chainId": 10,
+      "rpc": "https://mainnet.optimism.io",
+      "explorer": "https://optimistic.etherscan.io",
+      "testnet": false
+    },
+    "optimism-sepolia": {
+      "chainId": 11155420,
+      "rpc": "https://sepolia.optimism.io",
+      "explorer": "https://sepolia-optimistic.etherscan.io",
+      "testnet": true
+    },
+    "polygon": {
+      "chainId": 137,
+      "rpc": "https://polygon-rpc.com",
+      "explorer": "https://polygonscan.com",
+      "testnet": false
+    },
+    "polygon-amoy": {
+      "chainId": 80002,
+      "rpc": "https://rpc-amoy.polygon.technology",
+      "explorer": "https://amoy.polygonscan.com",
+      "testnet": true
+    },
+    "bsc": {
+      "chainId": 56,
+      "rpc": "https://bsc-dataseed.binance.org",
+      "explorer": "https://bscscan.com",
+      "testnet": false
+    },
+    "bsc-testnet": {
+      "chainId": 97,
+      "rpc": "https://data-seed-prebsc-1-s1.binance.org:8545",
+      "explorer": "https://testnet.bscscan.com",
+      "testnet": true
+    },
+    "avalanche": {
+      "chainId": 43114,
+      "rpc": "https://api.avax.network/ext/bc/C/rpc",
+      "explorer": "https://snowtrace.io",
+      "testnet": false
+    },
+    "avalanche-fuji": {
+      "chainId": 43113,
+      "rpc": "https://api.avax-test.network/ext/bc/C/rpc",
+      "explorer": "https://testnet.snowtrace.io",
+      "testnet": true
+    },
+    "automata": {
+      "chainId": 65536,
+      "rpc": "https://rpc.ata.network",
+      "explorer": "https://explorer.ata.network",
+      "testnet": false
+    },
+    "automata-testnet": {
+      "chainId": 1398243,
+      "rpc": "https://rpc-testnet.ata.network",
+      "explorer": "https://explorer-testnet.ata.network",
+      "testnet": true
+    },
+    "world": {
+      "chainId": 480,
+      "rpc": "https://worldchain-mainnet.g.alchemy.com/public",
+      "explorer": "https://worldscan.org",
+      "testnet": false
+    },
+    "unichain-sepolia": {
+      "chainId": 1301,
+      "rpc": "https://sepolia.unichain.org",
+      "explorer": "https://sepolia.uniscan.xyz",
+      "testnet": true
+    }
+  },
+  "deployment": {
+    "rootCert": "../samples/aws_root.der",
+    "sp1ProgramId": "../samples/sp1_program_id.json",
+    "risc0ProgramId": "../samples/risc0_program_id.json",
+    "maxTimeDiff": 10800
+  },
+  "verifiers": {
+    "sp1": {
+      "comment": "Official SP1 Verifier deployments from https://github.com/succinctlabs/sp1-contracts/blob/main/contracts/deployments/",
+      "deployments": {
+        "1": "0x3B6041173B80E77f038f3F2C0f9744f04837185e",
+        "8453": "0x3B6041173B80E77f038f3F2C0f9744f04837185e",
+        "10": "0x3B6041173B80E77f038f3F2C0f9744f04837185e",
+        "42161": "0x3B6041173B80E77f038f3F2C0f9744f04837185e",
+        "11155111": "0x50ACFBEdecf4cbe350E1a86fC6f03a821772f1e5",
+        "84532": "0x3B6041173B80E77f038f3F2C0f9744f04837185e",
+        "421614": "0x3B6041173B80E77f038f3F2C0f9744f04837185e",
+        "11155420": "0x3B6041173B80E77f038f3F2C0f9744f04837185e",
+        "137": "0x3B6041173B80E77f038f3F2C0f9744f04837185e",
+        "80002": "0x3B6041173B80E77f038f3F2C0f9744f04837185e",
+        "56": "0x3B6041173B80E77f038f3F2C0f9744f04837185e",
+        "97": "0x3B6041173B80E77f038f3F2C0f9744f04837185e",
+        "43114": "0x3B6041173B80E77f038f3F2C0f9744f04837185e",
+        "43113": "0x3B6041173B80E77f038f3F2C0f9744f04837185e",
+        "480": "0x3B6041173B80E77f038f3F2C0f9744f04837185e",
+        "1301": "0x3B6041173B80E77f038f3F2C0f9744f04837185e"
+      }
+    },
+    "risc0": {
+      "comment": "Official RISC0 Verifier deployments from https://github.com/risc0/risc0-ethereum/blob/main/contracts/deployment.toml",
+      "deployments": {
+        "1": "0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187",
+        "8453": "0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187",
+        "10": "0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187",
+        "42161": "0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187",
+        "11155111": "0x54aCE3ED46529B4d4F3770C8Bad5dDC48717B9bF",
+        "84532": "0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187",
+        "421614": "0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187",
+        "11155420": "0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187",
+        "137": "0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187",
+        "80002": "0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187",
+        "56": "0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187",
+        "97": "0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187",
+        "43114": "0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187",
+        "43113": "0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187",
+        "480": "0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187",
+        "1301": "0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187"
+      }
+    }
+  }
+}

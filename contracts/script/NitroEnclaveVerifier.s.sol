@@ -55,16 +55,11 @@ contract NitroEnclaveVerifierScript is Script {
             deployment = vm.readFile(fp);
             string[] memory keys = vm.parseJsonKeys(deployment, ".");
             for (uint256 i = 0; i < keys.length; i++) {
-                if (keys[i].eq("remark")) {
-                    continue;
-                }
                 string memory keyPath = string(abi.encodePacked(".", keys[i]));
                 vm.serializeAddress(deployment, keys[i], vm.parseJsonAddress(deployment, keyPath));
             }
         }
-        vm.serializeAddress(deployment, key, addr);
-
-        deployment = vm.serializeString(deployment, "remark", "deployments");
+        deployment = vm.serializeAddress(deployment, key, addr);
         console.log(string(abi.encodePacked("save file ", fp, ": ", deployment)));
         vm.writeFile(fp, deployment);
     }
@@ -72,30 +67,75 @@ contract NitroEnclaveVerifierScript is Script {
     function deploySP1Verifier() public {
         vm.startBroadcast();
         SP1Verifier sp1Verifier = new SP1Verifier();
+        vm.stopBroadcast();
+        require(address(sp1Verifier).code.length > 0, "SP1Verifier deployment failed");
         console.log("SP1Verifier deployed at", address(sp1Verifier));
         saveDeployed("SP1_VERIFIER", address(sp1Verifier));
-        vm.stopBroadcast();
     }
 
     function deployRisc0Verifier() public {
         vm.startBroadcast();
         RiscZeroGroth16Verifier risc0Verifier = new RiscZeroGroth16Verifier(ControlID.CONTROL_ROOT, ControlID.BN254_CONTROL_ID);
+        vm.stopBroadcast();
+        require(address(risc0Verifier).code.length > 0, "Risc0Verifier deployment failed");
         console.log("Risc0Verifier deployed at", address(risc0Verifier));
         saveDeployed("RISC0_VERIFIER", address(risc0Verifier));
-        vm.stopBroadcast();
     }
 
-    function deployVerifier() public {
+    function needsRedeploy(string memory key, bytes memory localBytecode) internal view returns (bool) {
+        if (!isDeployed(key)) {
+            console.log(string(abi.encodePacked(key, " not deployed yet")));
+            return true;
+        }
+        
+        address deployedAddr = readDeployed(key);
+        bytes memory chainBytecode = deployedAddr.code;
+        
+        if (chainBytecode.length == 0) {
+            console.log(string(abi.encodePacked(key, " address has no code, needs redeploy")));
+            return true;
+        }
+        
+        bytes32 localHash = keccak256(localBytecode);
+        bytes32 chainHash = keccak256(chainBytecode);
+        
+        if (localHash != chainHash) {
+            console.log(string(abi.encodePacked(key, " bytecode changed, needs redeploy")));
+            console.log("Local bytecode hash:");
+            console.logBytes32(localHash);
+            console.log("Chain bytecode hash:");
+            console.logBytes32(chainHash);
+            return true;
+        }
+        
+        console.log(string(abi.encodePacked(key, " bytecode matches, skip deployment")));
+        return false;
+    }
+
+    function deployVerifier() public returns (bool) {
+        string memory configPath = "deploy-config.json";
+        string memory config = vm.readFile(configPath);
+        uint64 maxTimeDiff = uint64(vm.parseJsonUint(config, ".deployment.maxTimeDiff"));
+        
+        bytes memory localBytecode = type(NitroEnclaveVerifier).runtimeCode;
+        
+        if (!needsRedeploy("VERIFIER", localBytecode)) {
+            console.log("Skip NitroEnclaveVerifier deployment, using existing:", readDeployed("VERIFIER"));
+            return false;
+        }
+        
         vm.startBroadcast();
-        NitroEnclaveVerifier verifier = new NitroEnclaveVerifier(10800, new bytes32[](0));
+        NitroEnclaveVerifier verifier = new NitroEnclaveVerifier(msg.sender, maxTimeDiff, new bytes32[](0));
         vm.stopBroadcast();
+        require(address(verifier).code.length > 0, "NitroEnclaveVerifier deployment failed");
         console.log("NitroEnclaveVerifier deployed at", address(verifier));
+        console.log("maxTimeDiff:", maxTimeDiff);
         saveDeployed("VERIFIER", address(verifier));
+        return true;
     }
 
     function deployAll(string memory rootCert, string memory sp1Program, string memory risc0Program) public {
-        if (!isDeployed("VERIFIER")) {
-            deployVerifier();
+        if (deployVerifier()) {
             setRootCert(rootCert);
         }
         setZkVerifier(sp1Program);
@@ -142,10 +182,21 @@ contract NitroEnclaveVerifierScript is Script {
         } else {
             revert("unknown zkType");
         }
-        console.log(Ownable(readDeployed("VERIFIER")).owner());
-        console.log(msg.sender);
+        
+        INitroEnclaveVerifier verifier = INitroEnclaveVerifier(readDeployed("VERIFIER"));
+        ZkCoProcessorConfig memory remoteConfig = verifier.getZkConfig(zkType);
+        
+        if (remoteConfig.verifierId == config.verifierId 
+            && remoteConfig.verifierProofId == config.verifierProofId
+            && remoteConfig.aggregatorId == config.aggregatorId
+            && remoteConfig.zkVerifier == config.zkVerifier) {
+            console.log(string(abi.encodePacked(zktype, " configuration matches remote, skip update")));
+            return;
+        }
+
+        console.log(string(abi.encodePacked(zktype, " configuration differs, updating...")));
         vm.startBroadcast();
-        INitroEnclaveVerifier(readDeployed("VERIFIER")).setZkConfiguration(zkType, config);
+        verifier.setZkConfiguration(zkType, config);
         vm.stopBroadcast();
     }
 

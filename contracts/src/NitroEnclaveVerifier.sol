@@ -49,19 +49,20 @@ contract NitroEnclaveVerifier is Ownable, INitroEnclaveVerifier {
     bytes32 public rootCert;
 
     /**
-     * @dev Initializes the contract with time tolerance and initial trusted certificates
+     * @dev Initializes the contract with owner, time tolerance and initial trusted certificates
+     * @param _owner Address to be set as the contract owner
      * @param _maxTimeDiff Maximum time difference in seconds for timestamp validation
-     * @param initializeTrustedCerts Array of initial trusted intermediate certificate hashes
+     * @param _initializeTrustedCerts Array of initial trusted intermediate certificate hashes
      * 
-     * Sets the deployer as the contract owner and initializes the trusted certificate set.
+     * Sets the provided address as the contract owner and initializes the trusted certificate set.
      * The root certificate must be set separately after deployment.
      */
-    constructor(uint64 _maxTimeDiff, bytes32[] memory initializeTrustedCerts) {
+    constructor(address _owner, uint64 _maxTimeDiff, bytes32[] memory _initializeTrustedCerts) {
         maxTimeDiff = _maxTimeDiff;
-        for (uint256 i = 0; i < initializeTrustedCerts.length; i++) {
-            trustedIntermediateCerts[initializeTrustedCerts[i]] = true;
+        for (uint256 i = 0; i < _initializeTrustedCerts.length; i++) {
+            trustedIntermediateCerts[_initializeTrustedCerts[i]] = true;
         }
-        _initializeOwner(msg.sender);
+        _initializeOwner(_owner);
     }
 
     /**

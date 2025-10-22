@@ -27,6 +27,25 @@ A comprehensive SDK for AWS Nitro Enclave attestation verification that generate
 * **Comprehensive CLI Tool**
   * Comprehensive CLI tool for proof generation, verification, and debugging
 
+## Predeploy Contracts
+
+## Mainnet Deployments
+
+| Network | Chain ID | NitroEnclaveVerifier | SP1 Verifier | RISC0 Verifier |
+|---------|----------|---------------------|--------------|----------------|
+
+## Testnet Deployments
+
+| Network | Chain ID | NitroEnclaveVerifier | SP1 Verifier | RISC0 Verifier |
+|---------|----------|---------------------|--------------|----------------|
+| sepolia | 11155111 | [`0x2D7fbBAD6792698Ba92e67b7e180f8010B9Ec788`](https://sepolia.etherscan.io/address/0x2D7fbBAD6792698Ba92e67b7e180f8010B9Ec788) | [`0x50ACFBEdecf4cbe350E1a86fC6f03a821772f1e5`](https://sepolia.etherscan.io/address/0x50ACFBEdecf4cbe350E1a86fC6f03a821772f1e5) | [`0x54aCE3ED46529B4d4F3770C8Bad5dDC48717B9bF`](https://sepolia.etherscan.io/address/0x54aCE3ED46529B4d4F3770C8Bad5dDC48717B9bF) |
+| optimism-sepolia | 11155420 | [`0x5d1B5BEd5365942421afD473c121abEAc138A3E1`](https://sepolia-optimistic.etherscan.io/address/0x5d1B5BEd5365942421afD473c121abEAc138A3E1) | [`0x3B6041173B80E77f038f3F2C0f9744f04837185e`](https://sepolia-optimistic.etherscan.io/address/0x3B6041173B80E77f038f3F2C0f9744f04837185e) | [`0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187`](https://sepolia-optimistic.etherscan.io/address/0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187) |
+| unichain-sepolia | 1301 | [`0x5d1B5BEd5365942421afD473c121abEAc138A3E1`](https://sepolia.uniscan.xyz/address/0x5d1B5BEd5365942421afD473c121abEAc138A3E1) | [`0x3B6041173B80E77f038f3F2C0f9744f04837185e`](https://sepolia.uniscan.xyz/address/0x3B6041173B80E77f038f3F2C0f9744f04837185e) | [`0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187`](https://sepolia.uniscan.xyz/address/0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187) |
+| automata-testnet | 1398243 | [`0x0638431CC9421Eee19679f6a0Da9d450F11Db26f`](https://explorer-testnet.ata.network/address/0x0638431CC9421Eee19679f6a0Da9d450F11Db26f) | [`0xed8827896C5c1DfEE2F112C00A08fdb3F9fd6ec5`](https://explorer-testnet.ata.network/address/0xed8827896C5c1DfEE2F112C00A08fdb3F9fd6ec5) | [`0xeD7eA7C3265057560E71CC6057D59C39B91139fb`](https://explorer-testnet.ata.network/address/0xeD7eA7C3265057560E71CC6057D59C39B91139fb) |
+| arbitrum-sepolia | 421614 | [`0x5d1B5BEd5365942421afD473c121abEAc138A3E1`](https://sepolia.arbiscan.io/address/0x5d1B5BEd5365942421afD473c121abEAc138A3E1) | [`0x3B6041173B80E77f038f3F2C0f9744f04837185e`](https://sepolia.arbiscan.io/address/0x3B6041173B80E77f038f3F2C0f9744f04837185e) | [`0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187`](https://sepolia.arbiscan.io/address/0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187) |
+| avalanche-fuji | 43113 | [`0x5d1B5BEd5365942421afD473c121abEAc138A3E1`](https://testnet.snowtrace.io/address/0x5d1B5BEd5365942421afD473c121abEAc138A3E1) | [`0x3B6041173B80E77f038f3F2C0f9744f04837185e`](https://testnet.snowtrace.io/address/0x3B6041173B80E77f038f3F2C0f9744f04837185e) | [`0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187`](https://testnet.snowtrace.io/address/0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187) |
+| bsc-testnet | 97 | [`0x5d1B5BEd5365942421afD473c121abEAc138A3E1`](https://testnet.bscscan.com/address/0x5d1B5BEd5365942421afD473c121abEAc138A3E1) | [`0x3B6041173B80E77f038f3F2C0f9744f04837185e`](https://testnet.bscscan.com/address/0x3B6041173B80E77f038f3F2C0f9744f04837185e) | [`0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187`](https://testnet.bscscan.com/address/0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187) |
+
 ## Generating Attestation Reports
 
 This repository does not include the attestation report generation functionality. Please refer to the following resources:
