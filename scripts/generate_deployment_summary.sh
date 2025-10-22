@@ -43,7 +43,7 @@ for file in "$DEPLOYMENTS_DIR"/*.json; do
         is_testnet=$(jq -r --arg cid "$chain_id" '.chains | to_entries[] | select(.value.chainId == ($cid | tonumber)) | .value.testnet // false' "$CONFIG_FILE")
         
         if [ "$is_testnet" == "false" ]; then
-            chain_name=$(jq -r --arg cid "$chain_id" '.chains | to_entries[] | select(.value.chainId == ($cid | tonumber)) | .key' "$CONFIG_FILE")
+            chain_name=$(jq -r --arg cid "$chain_id" '.chains | to_entries[] | select(.value.chainId == ($cid | tonumber)) | .value.name' "$CONFIG_FILE")
             explorer=$(jq -r --arg cid "$chain_id" '.chains | to_entries[] | select(.value.chainId == ($cid | tonumber)) | .value.explorer' "$CONFIG_FILE")
             
             if [ -z "$chain_name" ] || [ "$chain_name" == "null" ]; then
@@ -94,7 +94,7 @@ for file in "$DEPLOYMENTS_DIR"/*.json; do
         is_testnet=$(jq -r --arg cid "$chain_id" '.chains | to_entries[] | select(.value.chainId == ($cid | tonumber)) | .value.testnet // false' "$CONFIG_FILE")
         
         if [ "$is_testnet" == "true" ]; then
-            chain_name=$(jq -r --arg cid "$chain_id" '.chains | to_entries[] | select(.value.chainId == ($cid | tonumber)) | .key' "$CONFIG_FILE")
+            chain_name=$(jq -r --arg cid "$chain_id" '.chains | to_entries[] | select(.value.chainId == ($cid | tonumber)) | .value.name' "$CONFIG_FILE")
             explorer=$(jq -r --arg cid "$chain_id" '.chains | to_entries[] | select(.value.chainId == ($cid | tonumber)) | .value.explorer' "$CONFIG_FILE")
             
             if [ -z "$chain_name" ] || [ "$chain_name" == "null" ]; then

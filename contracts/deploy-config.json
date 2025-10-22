@@ -1,108 +1,126 @@
 {
   "chains": {
     "sepolia": {
+      "name": "Sepolia",
       "chainId": 11155111,
       "rpc": "https://1rpc.io/sepolia",
       "explorer": "https://sepolia.etherscan.io",
       "testnet": true
     },
     "mainnet": {
+      "name": "Ethereum Mainnet",
       "chainId": 1,
       "rpc": "https://1rpc.io/eth",
       "explorer": "https://etherscan.io",
       "testnet": false
     },
     "base": {
+      "name": "Base",
       "chainId": 8453,
       "rpc": "https://mainnet.base.org",
       "explorer": "https://basescan.org",
       "testnet": false
     },
     "base-sepolia": {
+      "name": "Base Sepolia",
       "chainId": 84532,
       "rpc": "https://sepolia.base.org",
       "explorer": "https://sepolia.basescan.org",
       "testnet": true
     },
     "arbitrum": {
+      "name": "Arbitrum One",
       "chainId": 42161,
       "rpc": "https://arb1.arbitrum.io/rpc",
       "explorer": "https://arbiscan.io",
       "testnet": false
     },
     "arbitrum-sepolia": {
+      "name": "Arbitrum Sepolia",
       "chainId": 421614,
       "rpc": "https://sepolia-rollup.arbitrum.io/rpc",
       "explorer": "https://sepolia.arbiscan.io",
       "testnet": true
     },
     "optimism": {
+      "name": "Optimism",
       "chainId": 10,
       "rpc": "https://mainnet.optimism.io",
       "explorer": "https://optimistic.etherscan.io",
       "testnet": false
     },
     "optimism-sepolia": {
+      "name": "Optimism Sepolia",
       "chainId": 11155420,
       "rpc": "https://sepolia.optimism.io",
       "explorer": "https://sepolia-optimistic.etherscan.io",
       "testnet": true
     },
     "polygon": {
+      "name": "Polygon",
       "chainId": 137,
       "rpc": "https://polygon-rpc.com",
       "explorer": "https://polygonscan.com",
       "testnet": false
     },
     "polygon-amoy": {
+      "name": "Polygon Amoy",
       "chainId": 80002,
       "rpc": "https://rpc-amoy.polygon.technology",
       "explorer": "https://amoy.polygonscan.com",
       "testnet": true
     },
     "bsc": {
+      "name": "BNB Smart Chain",
       "chainId": 56,
       "rpc": "https://bsc-dataseed.binance.org",
       "explorer": "https://bscscan.com",
       "testnet": false
     },
     "bsc-testnet": {
+      "name": "BNB Smart Chain Testnet",
       "chainId": 97,
       "rpc": "https://data-seed-prebsc-1-s1.binance.org:8545",
       "explorer": "https://testnet.bscscan.com",
       "testnet": true
     },
     "avalanche": {
+      "name": "Avalanche C-Chain",
       "chainId": 43114,
       "rpc": "https://api.avax.network/ext/bc/C/rpc",
       "explorer": "https://snowtrace.io",
       "testnet": false
     },
     "avalanche-fuji": {
+      "name": "Avalanche Fuji",
       "chainId": 43113,
       "rpc": "https://api.avax-test.network/ext/bc/C/rpc",
       "explorer": "https://testnet.snowtrace.io",
       "testnet": true
     },
     "automata": {
+      "name": "Automata",
       "chainId": 65536,
       "rpc": "https://rpc.ata.network",
       "explorer": "https://explorer.ata.network",
       "testnet": false
     },
     "automata-testnet": {
+      "name": "Automata Testnet",
       "chainId": 1398243,
       "rpc": "https://rpc-testnet.ata.network",
       "explorer": "https://explorer-testnet.ata.network",
       "testnet": true
     },
     "world": {
+      "name": "World Chain",
       "chainId": 480,
       "rpc": "https://worldchain-mainnet.g.alchemy.com/public",
       "explorer": "https://worldscan.org",
       "testnet": false
     },
     "unichain-sepolia": {
+      "name": "Unichain Sepolia",
       "chainId": 1301,
       "rpc": "https://sepolia.unichain.org",
       "explorer": "https://sepolia.uniscan.xyz",
