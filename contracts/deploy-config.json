@@ -125,6 +125,13 @@
       "rpc": "https://sepolia.unichain.org",
       "explorer": "https://sepolia.uniscan.xyz",
       "testnet": true
+    },
+    "hoodi": {
+      "name": "Hoodi",
+      "chainId": 560048,
+      "rpc": "https://rpc.hoodi.ethpandaops.io",
+      "explorer": "https://hoodi.etherscan.io",
+      "testnet": true
     }
   },
   "deployment": {
