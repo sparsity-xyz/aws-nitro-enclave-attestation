@@ -33,6 +33,12 @@ A comprehensive SDK for AWS Nitro Enclave attestation verification that generate
 
 | Network | Chain ID | NitroEnclaveVerifier | SP1 Verifier | RISC0 Verifier |
 |---------|----------|---------------------|--------------|----------------|
+| mainnet | 1 | [`0x352D171d7c1A72704EE21544547A6B2d2eCf993d`](https://etherscan.io/address/0x352D171d7c1A72704EE21544547A6B2d2eCf993d) | [`0x3B6041173B80E77f038f3F2C0f9744f04837185e`](https://etherscan.io/address/0x3B6041173B80E77f038f3F2C0f9744f04837185e) | [`0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187`](https://etherscan.io/address/0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187) |
+| optimism | 10 | [`0x5d1B5BEd5365942421afD473c121abEAc138A3E1`](https://optimistic.etherscan.io/address/0x5d1B5BEd5365942421afD473c121abEAc138A3E1) | [`0x3B6041173B80E77f038f3F2C0f9744f04837185e`](https://optimistic.etherscan.io/address/0x3B6041173B80E77f038f3F2C0f9744f04837185e) | [`0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187`](https://optimistic.etherscan.io/address/0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187) |
+| arbitrum | 42161 | [`0x5d1B5BEd5365942421afD473c121abEAc138A3E1`](https://arbiscan.io/address/0x5d1B5BEd5365942421afD473c121abEAc138A3E1) | [`0x3B6041173B80E77f038f3F2C0f9744f04837185e`](https://arbiscan.io/address/0x3B6041173B80E77f038f3F2C0f9744f04837185e) | [`0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187`](https://arbiscan.io/address/0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187) |
+| world | 480 | [`0x5d1B5BEd5365942421afD473c121abEAc138A3E1`](https://worldscan.org/address/0x5d1B5BEd5365942421afD473c121abEAc138A3E1) | [`0x3B6041173B80E77f038f3F2C0f9744f04837185e`](https://worldscan.org/address/0x3B6041173B80E77f038f3F2C0f9744f04837185e) | [`0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187`](https://worldscan.org/address/0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187) |
+| automata | 65536 | [`0x458E3b10C075C230Bc9bdB4a18310f2926BB08Cf`](https://explorer.ata.network/address/0x458E3b10C075C230Bc9bdB4a18310f2926BB08Cf) | [`0x5d1B5BEd5365942421afD473c121abEAc138A3E1`](https://explorer.ata.network/address/0x5d1B5BEd5365942421afD473c121abEAc138A3E1) | [`0x18Fe24Cf185DD45533b24384666aF3be1b74cC64`](https://explorer.ata.network/address/0x18Fe24Cf185DD45533b24384666aF3be1b74cC64) |
+| base | 8453 | [`0x5d1B5BEd5365942421afD473c121abEAc138A3E1`](https://basescan.org/address/0x5d1B5BEd5365942421afD473c121abEAc138A3E1) | [`0x3B6041173B80E77f038f3F2C0f9744f04837185e`](https://basescan.org/address/0x3B6041173B80E77f038f3F2C0f9744f04837185e) | [`0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187`](https://basescan.org/address/0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187) |
 
 ## Testnet Deployments
 
@@ -44,7 +50,15 @@ A comprehensive SDK for AWS Nitro Enclave attestation verification that generate
 | automata-testnet | 1398243 | [`0x0638431CC9421Eee19679f6a0Da9d450F11Db26f`](https://explorer-testnet.ata.network/address/0x0638431CC9421Eee19679f6a0Da9d450F11Db26f) | [`0xed8827896C5c1DfEE2F112C00A08fdb3F9fd6ec5`](https://explorer-testnet.ata.network/address/0xed8827896C5c1DfEE2F112C00A08fdb3F9fd6ec5) | [`0xeD7eA7C3265057560E71CC6057D59C39B91139fb`](https://explorer-testnet.ata.network/address/0xeD7eA7C3265057560E71CC6057D59C39B91139fb) |
 | arbitrum-sepolia | 421614 | [`0x5d1B5BEd5365942421afD473c121abEAc138A3E1`](https://sepolia.arbiscan.io/address/0x5d1B5BEd5365942421afD473c121abEAc138A3E1) | [`0x3B6041173B80E77f038f3F2C0f9744f04837185e`](https://sepolia.arbiscan.io/address/0x3B6041173B80E77f038f3F2C0f9744f04837185e) | [`0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187`](https://sepolia.arbiscan.io/address/0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187) |
 | avalanche-fuji | 43113 | [`0x5d1B5BEd5365942421afD473c121abEAc138A3E1`](https://testnet.snowtrace.io/address/0x5d1B5BEd5365942421afD473c121abEAc138A3E1) | [`0x3B6041173B80E77f038f3F2C0f9744f04837185e`](https://testnet.snowtrace.io/address/0x3B6041173B80E77f038f3F2C0f9744f04837185e) | [`0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187`](https://testnet.snowtrace.io/address/0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187) |
+| polygon-amoy | 80002 | [`0x5d1B5BEd5365942421afD473c121abEAc138A3E1`](https://amoy.polygonscan.com/address/0x5d1B5BEd5365942421afD473c121abEAc138A3E1) | [`0x3B6041173B80E77f038f3F2C0f9744f04837185e`](https://amoy.polygonscan.com/address/0x3B6041173B80E77f038f3F2C0f9744f04837185e) | [`0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187`](https://amoy.polygonscan.com/address/0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187) |
+| base-sepolia | 84532 | [`0x352D171d7c1A72704EE21544547A6B2d2eCf993d`](https://sepolia.basescan.org/address/0x352D171d7c1A72704EE21544547A6B2d2eCf993d) | [`0x3B6041173B80E77f038f3F2C0f9744f04837185e`](https://sepolia.basescan.org/address/0x3B6041173B80E77f038f3F2C0f9744f04837185e) | [`0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187`](https://sepolia.basescan.org/address/0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187) |
 | bsc-testnet | 97 | [`0x5d1B5BEd5365942421afD473c121abEAc138A3E1`](https://testnet.bscscan.com/address/0x5d1B5BEd5365942421afD473c121abEAc138A3E1) | [`0x3B6041173B80E77f038f3F2C0f9744f04837185e`](https://testnet.bscscan.com/address/0x3B6041173B80E77f038f3F2C0f9744f04837185e) | [`0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187`](https://testnet.bscscan.com/address/0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187) |
+
+
+| ZkType | Verifier ID | Verifier Proof ID | Aggregator ID |
+| ------ | ----------- | ----------------- | ------------- |
+| Risc0  | 0xb01c0174aed6bd02aecec2671739e004503f6482f4e7298e71129f9e0aea309e | 0xb01c0174aed6bd02aecec2671739e004503f6482f4e7298e71129f9e0aea309e | 0xb5bb99768a18b5ba530ef4f7c13fc8f5130c1ed20db8190d11d8ab1f5f4d9dc5 |
+| SP1    | 0x00b4cb0d6792208f420530ce5a04d35280e8b91264447435534305bd3cd37710 | 0xb386655ad0238864cb19a64028354d2093c84507d5d011117a0b86261077d33c | 0x002cd64bf7560360fae369bfad7e51160e58070a8ae6dc20e28311a66c6081cb |
 
 ## Generating Attestation Reports
 
@@ -281,18 +295,6 @@ $ forge script script/NitroEnclaveVerifier.s.sol --rpc-url $RPC_URL --private-ke
 ```
 
 </details>
-
-### Predeployed Contract
-
-| Network | ChainID  | NitroEnclaveVerifier                       | SP1Verifier                                | RiscZeroGroth16Verifier                    |
-| ------- | -------- | ------------------------------------------ | ------------------------------------------ | ------------------------------------------ |
-| Holesky | 17000    | 0xF3B35f928B6848785c287A601ceDe5f4b522420C | 0x50ACFBEdecf4cbe350E1a86fC6f03a821772f1e5 | 0x54aCE3ED46529B4d4F3770C8Bad5dDC48717B9bF |
-| Sepolia | 11155111 | 0xF3B35f928B6848785c287A601ceDe5f4b522420C | 0x50ACFBEdecf4cbe350E1a86fC6f03a821772f1e5 | 0x54aCE3ED46529B4d4F3770C8Bad5dDC48717B9bF |
-
-| ZkType | Verifier ID                                                        | Verifier Proof ID                                                  | Aggregator ID                                                      |
-| ------ | ------------------------------------------------------------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------ |
-| Risc0  | 0xb01c0174aed6bd02aecec2671739e004503f6482f4e7298e71129f9e0aea309e | 0xb01c0174aed6bd02aecec2671739e004503f6482f4e7298e71129f9e0aea309e | 0xb5bb99768a18b5ba530ef4f7c13fc8f5130c1ed20db8190d11d8ab1f5f4d9dc5 |
-| SP1    | 0x00d0c956f7d68e9d71577d9643713270a8d0bdfaad0645292186ce480c81b409 | 0x7bab64685ca7a375c8b2ef2a0a271337d5ef8546a4141934909c0d4309b4810c | 0x00a5cdc2fdacf04a609e6bb386b9ecf3339ef230f1384d095fe2dd0af4c46c22 |
 
 ## Development
 

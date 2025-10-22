@@ -38,14 +38,14 @@ function _summary() {
     echo "| SP1    | $(getProgram sp1 verifier_id) | $(getProgram sp1 verifier_proof_id) | $(getProgram sp1 aggregator_id) |"
 }
 
-echo "Holesky: $HOLESKY_RPC_URL"
-echo "Sepolia: $SEPOLIA_RPC_URL"
+#echo "Holesky: $HOLESKY_RPC_URL"
+#echo "Sepolia: $SEPOLIA_RPC_URL"
 
-cargo build
-_cli upload --sp1 --out samples/sp1_program_id.json
-_cli upload --risc0 --out samples/risc0_program_id.json
+#cargo build
+#_cli upload --sp1 --out samples/sp1_program_id.json
+#_cli upload --risc0 --out samples/risc0_program_id.json
 
-RPC_URL=$HOLESKY_RPC_URL _script 'deployAll(string,string,string)' ../samples/aws_root.der ../samples/sp1_program_id.json ../samples/risc0_program_id.json
-RPC_URL=$SEPOLIA_RPC_URL _script 'deployAll(string,string,string)' ../samples/aws_root.der ../samples/sp1_program_id.json ../samples/risc0_program_id.json
+#RPC_URL=$HOLESKY_RPC_URL _script 'deployAll(string,string,string)' ../samples/aws_root.der ../samples/sp1_program_id.json ../samples/risc0_program_id.json
+#RPC_URL=$SEPOLIA_RPC_URL _script 'deployAll(string,string,string)' ../samples/aws_root.der ../samples/sp1_program_id.json ../samples/risc0_program_id.json
 
 _summary
