@@ -37,7 +37,22 @@ jobs:
           toolchain: stable
           override: true
 
+      - name: Install Risc0 rzup and Risc0 Rust toolchain
+        shell: bash
+        run: |
+          # Install rzup (Risc0 toolchain manager)
+          curl -fsSL https://rzup.risc0.dev/install.sh | sh
+          # Load rzup environment for this step
+          source $HOME/.rzup/env
+          # Install Risc0's Rust toolchain required by risc0-build
+          rzup install rust
+          # Make rzup and its cargo available to subsequent steps
+          echo "$HOME/.rzup/bin" >> $GITHUB_PATH
+          echo "$HOME/.rzup/cargo/bin" >> $GITHUB_PATH
+
       - name: Build workspace (release)
+        env:
+          RUSTUP_TOOLCHAIN: stable
         run: |
           cargo build --workspace --release
 
