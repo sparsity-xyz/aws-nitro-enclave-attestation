@@ -1,0 +1,72 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+      - '*'
+
+jobs:
+  build-and-release:
+    name: Build and publish release when tag points to main
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Ensure tag points to origin/main
+        shell: bash
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
+          echo "Tag: $TAG"
+          # Fetch main so we can check whether the tagged commit is contained in it
+          git fetch origin main --depth=1 || true
+          if git branch --remotes --contains "${GITHUB_SHA}" | grep -q "origin/main"; then
+            echo "Tag ${TAG} points to a commit on origin/main — continuing."
+          else
+            echo "Tag ${TAG} does not point to a commit on origin/main — skipping release." 
+            exit 0
+          fi
+
+      - name: Set up Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+
+      - name: Build workspace (release)
+        run: |
+          cargo build --workspace --release
+
+      - name: Prepare release artifact
+        run: |
+          BIN=nitro-attest-cli
+          ART="${BIN}-${{ github.ref_name }}.tar.gz"
+          mkdir -p release
+          tar -C target/release -czf release/${ART} ${BIN} || (echo "Binary ${BIN} not found in target/release" && ls -la target/release && exit 1)
+          ls -lh release
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: ${{ github.ref_name }}
+          body: "Automated release for ${{ github.ref_name }}"
+          draft: false
+          prerelease: false
+
+      - name: Upload release asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: release/nitro-attest-cli-${{ github.ref_name }}.tar.gz
+          asset_name: nitro-attest-cli-${{ github.ref_name }}.tar.gz
+          asset_content_type: application/gzip
