@@ -41,7 +41,7 @@ jobs:
         shell: bash
         run: |
           curl -L https://risczero.com/install | bash
-          source $HOME/.bashrc
+          export PATH="$HOME/.risc0/bin:$PATH"
           rzup install rust
           echo "$HOME/.risc0/bin" >> $GITHUB_PATH
           echo "$HOME/.risc0/cargo/bin" >> $GITHUB_PATH
@@ -50,7 +50,7 @@ jobs:
         shell: bash
         run: |
           curl -L https://sp1up.succinct.xyz | bash
-          source $HOME/.bashrc
+          export PATH="$HOME/.sp1/bin:$PATH"
           sp1up install
           echo "$HOME/.sp1/bin" >> $GITHUB_PATH
 
