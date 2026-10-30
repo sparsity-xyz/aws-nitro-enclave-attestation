@@ -13,7 +13,7 @@ acceptance tests. Nova's previous fork-specific changes were release packaging.
 ## Build
 
 On Ubuntu 24.04 x86_64, install Rust 1.91.1 and the native build dependencies
-`build-essential pkg-config libssl-dev clang cmake protobuf-compiler`. Then:
+`build-essential pkg-config libssl-dev clang cmake protobuf-compiler libprotobuf-dev`. Then:
 
 ```sh
 bash scripts/build-nova-sp1.sh
