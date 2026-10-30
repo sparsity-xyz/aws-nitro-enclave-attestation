@@ -87,6 +87,10 @@ impl<Input, Output> ProgramSP1<Input, Output> {
             RawProofType::Groth16 => prover.groth16(),
         };
         let proof = prover.run()?;
+        // Verify the returned proof against this embedded program before exporting
+        // it to the registration worker. A fulfilled network request is not enough.
+        ENV_PROVER.verify(&proof, self.vk(), None)?;
+        tracing::info!("SP1 proof verified locally against the embedded program");
 
         Ok(RawProof::from_proof(
             &(proof.proof, self.vk().clone()),

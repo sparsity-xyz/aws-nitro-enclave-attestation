@@ -9,7 +9,7 @@ on:
 jobs:
   build-and-release:
     name: Build and publish release when tag points to main
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout repository
@@ -31,34 +31,14 @@ jobs:
             exit 0
           fi
 
-      - name: Set up Rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          override: true
+      - name: Install host build dependencies
+        run: sudo apt-get update && sudo apt-get install -y build-essential pkg-config libssl-dev clang cmake protobuf-compiler
 
-      - name: Install RISC0 toolchain (rzup)
-        shell: bash
-        run: |
-          curl -L https://risczero.com/install | bash
-          export PATH="$HOME/.risc0/bin:$PATH"
-          rzup install rust
-          echo "$HOME/.risc0/bin" >> $GITHUB_PATH
-          echo "$HOME/.risc0/cargo/bin" >> $GITHUB_PATH
+      - name: Install pinned Rust host toolchain
+        run: rustup show active-toolchain
 
-      - name: Install SP1 toolchain (sp1up)
-        shell: bash
-        run: |
-          curl -L https://sp1up.succinct.xyz | bash
-          export PATH="$HOME/.sp1/bin:$PATH"
-          sp1up
-          echo "$HOME/.sp1/bin" >> $GITHUB_PATH
-
-      - name: Build workspace (release)
-        env:
-          RUSTUP_TOOLCHAIN: stable
-        run: |
-          cargo build --workspace --release
+      - name: Build Nova SP1 CLI from committed guest ELFs
+        run: bash scripts/build-nova-sp1.sh
 
       - name: Prepare release artifact
         run: |

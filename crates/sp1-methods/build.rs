@@ -17,6 +17,10 @@ impl ZkVmBackend for Sp1Backend {
     ) -> PathBuf {
         let mut args = BuildArgs {
             docker,
+            // Keep the committed upstream guest ELFs reproducible while upgrading
+            // the host SDK. Changing this image intentionally changes program IDs.
+            tag: "v6.1.0".to_string(),
+            locked: true,
             workspace_directory: Some(ws_root.to_string_lossy().into_owned()),
             ..Default::default()
         };

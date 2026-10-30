@@ -57,7 +57,7 @@ risc0-zkvm = { version = "^3.0.3", default-features = false }
 boundless-market = "1.4.0"
 risc0-ethereum-contracts = { git = "https://github.com/risc0/risc0-ethereum", tag = "v3.0.1" }
 
-sp1-sdk = { version = "^6.1.0", default-features = false, features = ["network", "blocking"] }
+sp1-sdk = { version = "=6.10.0", default-features = false, features = ["network", "blocking"] }
 
 pico-sdk = { git = "https://github.com/automata-network/pico.git", branch = "evm_defer_proof" }
 pico-vm = { git = "https://github.com/automata-network/pico.git", branch = "evm_defer_proof" }
