@@ -32,7 +32,9 @@ impl Bytes48 {
         self.first.is_zero() && self.second.is_zero()
     }
     pub fn to_bytes(&self) -> Bytes {
-        [self.first.as_slice(), self.second.as_slice()].concat().into()
+        [self.first.as_slice(), self.second.as_slice()]
+            .concat()
+            .into()
     }
 }
 
@@ -59,17 +61,6 @@ impl VerifierJournal {
     pub fn decode(buf: &[u8]) -> anyhow::Result<Self> {
         Ok(Self::abi_decode(buf)
             .map_err(|err| anyhow!("Failed to decode VerifierJournal: {}", err))?)
-    }
-}
-
-impl BatchVerifierInput {
-    pub fn encode(&self) -> Vec<u8> {
-        self.abi_encode()
-    }
-
-    pub fn decode(buf: &[u8]) -> anyhow::Result<Self> {
-        Ok(Self::abi_decode(buf)
-            .map_err(|err| anyhow!("Failed to decode BatchVerifierInput: {}", err))?)
     }
 }
 

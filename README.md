@@ -33,36 +33,57 @@ A comprehensive SDK for AWS Nitro Enclave attestation verification that generate
 
 | Network | Chain ID | NitroEnclaveVerifier | SP1 Verifier | RISC0 Verifier |
 |---------|----------|---------------------|--------------|----------------|
-| Ethereum Mainnet | 1 | [`0x352D171d7c1A72704EE21544547A6B2d2eCf993d`](https://etherscan.io/address/0x352D171d7c1A72704EE21544547A6B2d2eCf993d) | [`0x3B6041173B80E77f038f3F2C0f9744f04837185e`](https://etherscan.io/address/0x3B6041173B80E77f038f3F2C0f9744f04837185e) | [`0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187`](https://etherscan.io/address/0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187) |
-| Optimism | 10 | [`0x5d1B5BEd5365942421afD473c121abEAc138A3E1`](https://optimistic.etherscan.io/address/0x5d1B5BEd5365942421afD473c121abEAc138A3E1) | [`0x3B6041173B80E77f038f3F2C0f9744f04837185e`](https://optimistic.etherscan.io/address/0x3B6041173B80E77f038f3F2C0f9744f04837185e) | [`0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187`](https://optimistic.etherscan.io/address/0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187) |
-| Polygon | 137 | [`0x5d1B5BEd5365942421afD473c121abEAc138A3E1`](https://polygonscan.com/address/0x5d1B5BEd5365942421afD473c121abEAc138A3E1) | [`0x3B6041173B80E77f038f3F2C0f9744f04837185e`](https://polygonscan.com/address/0x3B6041173B80E77f038f3F2C0f9744f04837185e) | [`0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187`](https://polygonscan.com/address/0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187) |
-| Arbitrum One | 42161 | [`0x5d1B5BEd5365942421afD473c121abEAc138A3E1`](https://arbiscan.io/address/0x5d1B5BEd5365942421afD473c121abEAc138A3E1) | [`0x3B6041173B80E77f038f3F2C0f9744f04837185e`](https://arbiscan.io/address/0x3B6041173B80E77f038f3F2C0f9744f04837185e) | [`0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187`](https://arbiscan.io/address/0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187) |
-| Avalanche C-Chain | 43114 | [`0x5d1B5BEd5365942421afD473c121abEAc138A3E1`](https://snowtrace.io/address/0x5d1B5BEd5365942421afD473c121abEAc138A3E1) | [`0x3B6041173B80E77f038f3F2C0f9744f04837185e`](https://snowtrace.io/address/0x3B6041173B80E77f038f3F2C0f9744f04837185e) | [`0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187`](https://snowtrace.io/address/0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187) |
-| World Chain | 480 | [`0x5d1B5BEd5365942421afD473c121abEAc138A3E1`](https://worldscan.org/address/0x5d1B5BEd5365942421afD473c121abEAc138A3E1) | [`0x3B6041173B80E77f038f3F2C0f9744f04837185e`](https://worldscan.org/address/0x3B6041173B80E77f038f3F2C0f9744f04837185e) | [`0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187`](https://worldscan.org/address/0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187) |
-| BNB Smart Chain | 56 | [`0x5d1B5BEd5365942421afD473c121abEAc138A3E1`](https://bscscan.com/address/0x5d1B5BEd5365942421afD473c121abEAc138A3E1) | [`0x3B6041173B80E77f038f3F2C0f9744f04837185e`](https://bscscan.com/address/0x3B6041173B80E77f038f3F2C0f9744f04837185e) | [`0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187`](https://bscscan.com/address/0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187) |
-| Automata | 65536 | [`0x458E3b10C075C230Bc9bdB4a18310f2926BB08Cf`](https://explorer.ata.network/address/0x458E3b10C075C230Bc9bdB4a18310f2926BB08Cf) | [`0x5d1B5BEd5365942421afD473c121abEAc138A3E1`](https://explorer.ata.network/address/0x5d1B5BEd5365942421afD473c121abEAc138A3E1) | [`0x18Fe24Cf185DD45533b24384666aF3be1b74cC64`](https://explorer.ata.network/address/0x18Fe24Cf185DD45533b24384666aF3be1b74cC64) |
-| Base | 8453 | [`0x5d1B5BEd5365942421afD473c121abEAc138A3E1`](https://basescan.org/address/0x5d1B5BEd5365942421afD473c121abEAc138A3E1) | [`0x3B6041173B80E77f038f3F2C0f9744f04837185e`](https://basescan.org/address/0x3B6041173B80E77f038f3F2C0f9744f04837185e) | [`0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187`](https://basescan.org/address/0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187) |
+| Ethereum Mainnet | 1 | [`0x08e49F31Ab11b17f3a5BaA36e6744E9B532bC87B`](https://etherscan.io/address/0x08e49F31Ab11b17f3a5BaA36e6744E9B532bC87B) | [`0x397A5f7f3dBd538f23DE225B51f532c34448dA9B`](https://etherscan.io/address/0x397A5f7f3dBd538f23DE225B51f532c34448dA9B) | [`0x8EaB2D97Dfce405A1692a21b3ff3A172d593D319`](https://etherscan.io/address/0x8EaB2D97Dfce405A1692a21b3ff3A172d593D319) |
+| Optimism | 10 | [`0x08e49F31Ab11b17f3a5BaA36e6744E9B532bC87B`](https://optimistic.etherscan.io/address/0x08e49F31Ab11b17f3a5BaA36e6744E9B532bC87B) | [`0x397A5f7f3dBd538f23DE225B51f532c34448dA9B`](https://optimistic.etherscan.io/address/0x397A5f7f3dBd538f23DE225B51f532c34448dA9B) | [`0x0b144E07A0826182B6b59788c34b32Bfa86Fb711`](https://optimistic.etherscan.io/address/0x0b144E07A0826182B6b59788c34b32Bfa86Fb711) |
+| Polygon | 137 | [`0x08e49F31Ab11b17f3a5BaA36e6744E9B532bC87B`](https://polygonscan.com/address/0x08e49F31Ab11b17f3a5BaA36e6744E9B532bC87B) | [`0x3B6041173B80E77f038f3F2C0f9744f04837185e`](https://polygonscan.com/address/0x3B6041173B80E77f038f3F2C0f9744f04837185e) | [`0xdBAD523786971B75A7b1c1CFdCfECDeb59A764B9`](https://polygonscan.com/address/0xdBAD523786971B75A7b1c1CFdCfECDeb59A764B9) |
+| Arbitrum One | 42161 | [`0x08e49F31Ab11b17f3a5BaA36e6744E9B532bC87B`](https://arbiscan.io/address/0x08e49F31Ab11b17f3a5BaA36e6744E9B532bC87B) | [`0x397A5f7f3dBd538f23DE225B51f532c34448dA9B`](https://arbiscan.io/address/0x397A5f7f3dBd538f23DE225B51f532c34448dA9B) | [`0x0b144E07A0826182B6b59788c34b32Bfa86Fb711`](https://arbiscan.io/address/0x0b144E07A0826182B6b59788c34b32Bfa86Fb711) |
+| Avalanche C-Chain | 43114 | [`0x08e49F31Ab11b17f3a5BaA36e6744E9B532bC87B`](https://snowtrace.io/address/0x08e49F31Ab11b17f3a5BaA36e6744E9B532bC87B) | [`0x3B6041173B80E77f038f3F2C0f9744f04837185e`](https://snowtrace.io/address/0x3B6041173B80E77f038f3F2C0f9744f04837185e) | [`0x0b144E07A0826182B6b59788c34b32Bfa86Fb711`](https://snowtrace.io/address/0x0b144E07A0826182B6b59788c34b32Bfa86Fb711) |
+| World Chain | 480 | [`0x08e49F31Ab11b17f3a5BaA36e6744E9B532bC87B`](https://worldscan.org/address/0x08e49F31Ab11b17f3a5BaA36e6744E9B532bC87B) | [`0x3B6041173B80E77f038f3F2C0f9744f04837185e`](https://worldscan.org/address/0x3B6041173B80E77f038f3F2C0f9744f04837185e) | [`0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187`](https://worldscan.org/address/0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187) |
+| BNB Smart Chain | 56 | [`0x08e49F31Ab11b17f3a5BaA36e6744E9B532bC87B`](https://bscscan.com/address/0x08e49F31Ab11b17f3a5BaA36e6744E9B532bC87B) | [`0x940467b232cAD6A44FF36F2FBBe98CBd6509EFf2`](https://bscscan.com/address/0x940467b232cAD6A44FF36F2FBBe98CBd6509EFf2) | [`0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187`](https://bscscan.com/address/0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187) |
+| Automata | 65536 | [`0x08e49F31Ab11b17f3a5BaA36e6744E9B532bC87B`](https://explorer.ata.network/address/0x08e49F31Ab11b17f3a5BaA36e6744E9B532bC87B) | [`0x5d1B5BEd5365942421afD473c121abEAc138A3E1`](https://explorer.ata.network/address/0x5d1B5BEd5365942421afD473c121abEAc138A3E1) | [`0x18Fe24Cf185DD45533b24384666aF3be1b74cC64`](https://explorer.ata.network/address/0x18Fe24Cf185DD45533b24384666aF3be1b74cC64) |
+| Base | 8453 | [`0x08e49F31Ab11b17f3a5BaA36e6744E9B532bC87B`](https://basescan.org/address/0x08e49F31Ab11b17f3a5BaA36e6744E9B532bC87B) | [`0x397A5f7f3dBd538f23DE225B51f532c34448dA9B`](https://basescan.org/address/0x397A5f7f3dBd538f23DE225B51f532c34448dA9B) | [`0x0b144E07A0826182B6b59788c34b32Bfa86Fb711`](https://basescan.org/address/0x0b144E07A0826182B6b59788c34b32Bfa86Fb711) |
 
 ## Testnet Deployments
 
 | Network | Chain ID | NitroEnclaveVerifier | SP1 Verifier | RISC0 Verifier |
 |---------|----------|---------------------|--------------|----------------|
-| Sepolia | 11155111 | [`0x2D7fbBAD6792698Ba92e67b7e180f8010B9Ec788`](https://sepolia.etherscan.io/address/0x2D7fbBAD6792698Ba92e67b7e180f8010B9Ec788) | [`0x50ACFBEdecf4cbe350E1a86fC6f03a821772f1e5`](https://sepolia.etherscan.io/address/0x50ACFBEdecf4cbe350E1a86fC6f03a821772f1e5) | [`0x54aCE3ED46529B4d4F3770C8Bad5dDC48717B9bF`](https://sepolia.etherscan.io/address/0x54aCE3ED46529B4d4F3770C8Bad5dDC48717B9bF) |
-| Optimism Sepolia | 11155420 | [`0x5d1B5BEd5365942421afD473c121abEAc138A3E1`](https://sepolia-optimistic.etherscan.io/address/0x5d1B5BEd5365942421afD473c121abEAc138A3E1) | [`0x3B6041173B80E77f038f3F2C0f9744f04837185e`](https://sepolia-optimistic.etherscan.io/address/0x3B6041173B80E77f038f3F2C0f9744f04837185e) | [`0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187`](https://sepolia-optimistic.etherscan.io/address/0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187) |
-| Unichain Sepolia | 1301 | [`0x5d1B5BEd5365942421afD473c121abEAc138A3E1`](https://sepolia.uniscan.xyz/address/0x5d1B5BEd5365942421afD473c121abEAc138A3E1) | [`0x3B6041173B80E77f038f3F2C0f9744f04837185e`](https://sepolia.uniscan.xyz/address/0x3B6041173B80E77f038f3F2C0f9744f04837185e) | [`0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187`](https://sepolia.uniscan.xyz/address/0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187) |
-| Automata Testnet | 1398243 | [`0x0638431CC9421Eee19679f6a0Da9d450F11Db26f`](https://explorer-testnet.ata.network/address/0x0638431CC9421Eee19679f6a0Da9d450F11Db26f) | [`0xed8827896C5c1DfEE2F112C00A08fdb3F9fd6ec5`](https://explorer-testnet.ata.network/address/0xed8827896C5c1DfEE2F112C00A08fdb3F9fd6ec5) | [`0xeD7eA7C3265057560E71CC6057D59C39B91139fb`](https://explorer-testnet.ata.network/address/0xeD7eA7C3265057560E71CC6057D59C39B91139fb) |
-| Arbitrum Sepolia | 421614 | [`0x5d1B5BEd5365942421afD473c121abEAc138A3E1`](https://sepolia.arbiscan.io/address/0x5d1B5BEd5365942421afD473c121abEAc138A3E1) | [`0x3B6041173B80E77f038f3F2C0f9744f04837185e`](https://sepolia.arbiscan.io/address/0x3B6041173B80E77f038f3F2C0f9744f04837185e) | [`0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187`](https://sepolia.arbiscan.io/address/0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187) |
-| Avalanche Fuji | 43113 | [`0x5d1B5BEd5365942421afD473c121abEAc138A3E1`](https://testnet.snowtrace.io/address/0x5d1B5BEd5365942421afD473c121abEAc138A3E1) | [`0x3B6041173B80E77f038f3F2C0f9744f04837185e`](https://testnet.snowtrace.io/address/0x3B6041173B80E77f038f3F2C0f9744f04837185e) | [`0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187`](https://testnet.snowtrace.io/address/0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187) |
-| Hoodi | 560048 | [`0x5d1B5BEd5365942421afD473c121abEAc138A3E1`](https://hoodi.etherscan.io/address/0x5d1B5BEd5365942421afD473c121abEAc138A3E1) | [`0x5d1B5BEd5365942421afD473c121abEAc138A3E1`](https://hoodi.etherscan.io/address/0x5d1B5BEd5365942421afD473c121abEAc138A3E1) | [`0x18Fe24Cf185DD45533b24384666aF3be1b74cC64`](https://hoodi.etherscan.io/address/0x18Fe24Cf185DD45533b24384666aF3be1b74cC64) |
-| Polygon Amoy | 80002 | [`0x5d1B5BEd5365942421afD473c121abEAc138A3E1`](https://amoy.polygonscan.com/address/0x5d1B5BEd5365942421afD473c121abEAc138A3E1) | [`0x3B6041173B80E77f038f3F2C0f9744f04837185e`](https://amoy.polygonscan.com/address/0x3B6041173B80E77f038f3F2C0f9744f04837185e) | [`0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187`](https://amoy.polygonscan.com/address/0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187) |
-| Base Sepolia | 84532 | [`0x352D171d7c1A72704EE21544547A6B2d2eCf993d`](https://sepolia.basescan.org/address/0x352D171d7c1A72704EE21544547A6B2d2eCf993d) | [`0x3B6041173B80E77f038f3F2C0f9744f04837185e`](https://sepolia.basescan.org/address/0x3B6041173B80E77f038f3F2C0f9744f04837185e) | [`0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187`](https://sepolia.basescan.org/address/0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187) |
-| BNB Smart Chain Testnet | 97 | [`0x5d1B5BEd5365942421afD473c121abEAc138A3E1`](https://testnet.bscscan.com/address/0x5d1B5BEd5365942421afD473c121abEAc138A3E1) | [`0x3B6041173B80E77f038f3F2C0f9744f04837185e`](https://testnet.bscscan.com/address/0x3B6041173B80E77f038f3F2C0f9744f04837185e) | [`0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187`](https://testnet.bscscan.com/address/0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187) |
+| Sepolia | 11155111 | [`0x08e49F31Ab11b17f3a5BaA36e6744E9B532bC87B`](https://sepolia.etherscan.io/address/0x08e49F31Ab11b17f3a5BaA36e6744E9B532bC87B) | [`0x397A5f7f3dBd538f23DE225B51f532c34448dA9B`](https://sepolia.etherscan.io/address/0x397A5f7f3dBd538f23DE225B51f532c34448dA9B) | [`0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187`](https://sepolia.etherscan.io/address/0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187) |
+| Optimism Sepolia | 11155420 | [`0x08e49F31Ab11b17f3a5BaA36e6744E9B532bC87B`](https://sepolia-optimistic.etherscan.io/address/0x08e49F31Ab11b17f3a5BaA36e6744E9B532bC87B) | [`0x397A5f7f3dBd538f23DE225B51f532c34448dA9B`](https://sepolia-optimistic.etherscan.io/address/0x397A5f7f3dBd538f23DE225B51f532c34448dA9B) | [`0xB369b4dd27FBfb59921d3A4a3D23AC2fc32FB908`](https://sepolia-optimistic.etherscan.io/address/0xB369b4dd27FBfb59921d3A4a3D23AC2fc32FB908) |
+| Unichain Sepolia | 1301 | [`0x08e49F31Ab11b17f3a5BaA36e6744E9B532bC87B`](https://sepolia.uniscan.xyz/address/0x08e49F31Ab11b17f3a5BaA36e6744E9B532bC87B) | [`0x3B6041173B80E77f038f3F2C0f9744f04837185e`](https://sepolia.uniscan.xyz/address/0x3B6041173B80E77f038f3F2C0f9744f04837185e) | [`0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187`](https://sepolia.uniscan.xyz/address/0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187) |
+| Automata Testnet | 1398243 | [`0x08e49F31Ab11b17f3a5BaA36e6744E9B532bC87B`](https://explorer-testnet.ata.network/address/0x08e49F31Ab11b17f3a5BaA36e6744E9B532bC87B) | [`0x7291752B7c1e0E69adF9801865b25435b0bE4Fc6`](https://explorer-testnet.ata.network/address/0x7291752B7c1e0E69adF9801865b25435b0bE4Fc6) | [`0xaE7F7EC735b6A90366e55f87780b36e7e6Ec3c65`](https://explorer-testnet.ata.network/address/0xaE7F7EC735b6A90366e55f87780b36e7e6Ec3c65) |
+| Arbitrum Sepolia | 421614 | [`0x08e49F31Ab11b17f3a5BaA36e6744E9B532bC87B`](https://sepolia.arbiscan.io/address/0x08e49F31Ab11b17f3a5BaA36e6744E9B532bC87B) | [`0x397A5f7f3dBd538f23DE225B51f532c34448dA9B`](https://sepolia.arbiscan.io/address/0x397A5f7f3dBd538f23DE225B51f532c34448dA9B) | [`0x0b144E07A0826182B6b59788c34b32Bfa86Fb711`](https://sepolia.arbiscan.io/address/0x0b144E07A0826182B6b59788c34b32Bfa86Fb711) |
+| Avalanche Fuji | 43113 | [`0x08e49F31Ab11b17f3a5BaA36e6744E9B532bC87B`](https://testnet.snowtrace.io/address/0x08e49F31Ab11b17f3a5BaA36e6744E9B532bC87B) | [`0x3B6041173B80E77f038f3F2C0f9744f04837185e`](https://testnet.snowtrace.io/address/0x3B6041173B80E77f038f3F2C0f9744f04837185e) | [`0x0b144E07A0826182B6b59788c34b32Bfa86Fb711`](https://testnet.snowtrace.io/address/0x0b144E07A0826182B6b59788c34b32Bfa86Fb711) |
+| Hoodi | 560048 | [`0x08e49F31Ab11b17f3a5BaA36e6744E9B532bC87B`](https://hoodi.etherscan.io/address/0x08e49F31Ab11b17f3a5BaA36e6744E9B532bC87B) | [`0x7DA83eC4af493081500Ecd36d1a72c23F8fc2abd`](https://hoodi.etherscan.io/address/0x7DA83eC4af493081500Ecd36d1a72c23F8fc2abd) | [`0x32Db7dc407AC886807277636a1633A1381748DD8`](https://hoodi.etherscan.io/address/0x32Db7dc407AC886807277636a1633A1381748DD8) |
+| Polygon Amoy | 80002 | [`0x08e49F31Ab11b17f3a5BaA36e6744E9B532bC87B`](https://amoy.polygonscan.com/address/0x08e49F31Ab11b17f3a5BaA36e6744E9B532bC87B) | [`0x3B6041173B80E77f038f3F2C0f9744f04837185e`](https://amoy.polygonscan.com/address/0x3B6041173B80E77f038f3F2C0f9744f04837185e) | [`0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187`](https://amoy.polygonscan.com/address/0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187) |
+| Base Sepolia | 84532 | [`0x08e49F31Ab11b17f3a5BaA36e6744E9B532bC87B`](https://sepolia.basescan.org/address/0x08e49F31Ab11b17f3a5BaA36e6744E9B532bC87B) | [`0x397A5f7f3dBd538f23DE225B51f532c34448dA9B`](https://sepolia.basescan.org/address/0x397A5f7f3dBd538f23DE225B51f532c34448dA9B) | [`0x0b144E07A0826182B6b59788c34b32Bfa86Fb711`](https://sepolia.basescan.org/address/0x0b144E07A0826182B6b59788c34b32Bfa86Fb711) |
+| BNB Smart Chain Testnet | 97 | [`0x08e49F31Ab11b17f3a5BaA36e6744E9B532bC87B`](https://testnet.bscscan.com/address/0x08e49F31Ab11b17f3a5BaA36e6744E9B532bC87B) | [`0x3B6041173B80E77f038f3F2C0f9744f04837185e`](https://testnet.bscscan.com/address/0x3B6041173B80E77f038f3F2C0f9744f04837185e) | [`0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187`](https://testnet.bscscan.com/address/0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187) |
 
 
 | ZkType | Verifier ID | Verifier Proof ID | Aggregator ID |
 | ------ | ----------- | ----------------- | ------------- |
-| Risc0  | 0xb01c0174aed6bd02aecec2671739e004503f6482f4e7298e71129f9e0aea309e | 0xb01c0174aed6bd02aecec2671739e004503f6482f4e7298e71129f9e0aea309e | 0xb5bb99768a18b5ba530ef4f7c13fc8f5130c1ed20db8190d11d8ab1f5f4d9dc5 |
-| SP1    | 0x00b4cb0d6792208f420530ce5a04d35280e8b91264447435534305bd3cd37710 | 0xb386655ad0238864cb19a64028354d2093c84507d5d011117a0b86261077d33c | 0x002cd64bf7560360fae369bfad7e51160e58070a8ae6dc20e28311a66c6081cb |
+| Risc0  | 0x933285e8d3076b68cd7b59e611924a9aa2a0b836033213f5f6527b3fbd8897b4 | 0x933285e8d3076b68cd7b59e611924a9aa2a0b836033213f5f6527b3fbd8897b4 | 0x3b2a92fbc8ed23754da30eeaa6bfd72c6ee1ed7485a62d11c358092aa2ce91a7 |
+| SP1    | 0x00643c7149cf335e7ec9d3f3301e69658a7f0ef2bc7546509c257ed8809f28e1 | 0xa4381e329fd7cc73667e3a595896e6019577f8534219d571b1fd4a38e1289f00 | 0x00294928e44f0cdc9c74848c4cafcdb29f733a3bc07408c240be3d5afe750b3e |
+<!-- | Pico    | 0x009fa7467192bf60230f423dcc0b880ebebbffe955d7f75a8ac9bcbf5a58ba98 | 0x38a3d34f08d8af64b947e861eb80b8404affdf756add5f577e79931598ba585a | 0x00093dbf39d4986be382e062dcbf34d2bc8105637de89bdaaa588014a9c53e9b | -->
+
+> [!IMPORTANT]
+>
+> The program IDs above are derived from the ELFs committed under
+> `crates/{sp1,risc0}-methods/elf/` and only match a build that consumes
+> those ELFs reproducibly (`REPRODUCIBLE_BUILD` unset / `prebuilt` /
+> `docker`). A local non-reproducible build will produce different IDs
+> and the CLI will print a banner on startup. After regenerating ELFs,
+> run `nitro-attest-cli upload --out samples/<vm>_program_id.json [--sp1 | --risc0]`
+> to dump the fresh IDs.
+
+> [!NOTE]
+>
+> Pico zkVM does not currently provide remote provers. For that reason, Pico integration is only available on local for testing purposes.
+>
+> We advise you use a machine that is equipped with at least 256GB of memory to run the prover.
+>
+> It took us hours to generate EVM proofs (over Koalabear Field) by running the zkVM on an [Azure NC40ads H100 v5](https://learn.microsoft.com/en-us/azure/virtual-machines/sizes/gpu-accelerated/ncadsh100v5-series?tabs=sizebasic) instance.
+>
+> Currently the Pico SDK does not support GPU proving, and we believe the proving speed will significantly improve after GPU support is enabled.
 
 ## Generating Attestation Reports
 
@@ -188,10 +209,17 @@ async fn prove_with_contract() -> anyhow::Result<()> {
 ### Prerequisites
 
 Ensure you have the following installed:
-- [Rust](https://rustup.rs/) (latest stable version)
+- [Rust](https://rustup.rs/) — the toolchain version is pinned by
+  `rust-toolchain.toml`, `rustup` will fetch it automatically.
 - [Foundry](https://getfoundry.sh/) for smart contract development
-- [RiscZero](https://dev.risczero.com/api/zkvm/install)
-- [Succinct](https://docs.succinct.xyz/docs/sp1/getting-started/install)
+- [RiscZero](https://dev.risczero.com/api/zkvm/install) — only needed to
+  rebuild the RISC0 ELFs locally (`REPRODUCIBLE_BUILD=disable …`); the
+  default `prebuilt` mode consumes the committed `risc0-*.elf` and works
+  with just Rust installed.
+- [Succinct](https://docs.succinct.xyz/docs/sp1/getting-started/install) —
+  same note as RiscZero, only needed for local SP1 ELF rebuilds.
+- [Docker](https://docs.docker.com/get-docker/) — only required for
+  `REPRODUCIBLE_BUILD=docker` (containerized reproducible rebuilds and CI).
 
 <details>
 <summary><b>1. Generate Zero-Knowledge Proofs</b></summary>
@@ -269,8 +297,9 @@ $ cd contracts
 $ forge script script/NitroEnclaveVerifier.s.sol --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --sig 'deployVerifier()'
 
 # Deploy the SP1Verifier
-# If you want to use the official pre-deployed contract, please refer to https://github.com/succinctlabs/sp1-contracts/blob/main/contracts/deployments/
+# If you want to use the official pre-deployed gateway, please refer to https://github.com/succinctlabs/sp1-contracts/blob/main/contracts/deployments/
 # and export SP1_VERIFIER=$sp1VerifierAddr
+# Otherwise, deploySP1Verifier() deploys the bundled SP1 v6.1.0 Groth16 verifier.
 $ forge script script/NitroEnclaveVerifier.s.sol --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --sig 'deploySP1Verifier()'
 
 # Deploy the Risc0Verifier
@@ -302,6 +331,37 @@ $ forge script script/NitroEnclaveVerifier.s.sol --rpc-url $RPC_URL --private-ke
 
 ## Development
 
+### Reproducible ELF Builds
+
+The SP1 and RISC0 guest ELFs are committed under
+`crates/{sp1,risc0}-methods/elf/` so that downstream builds get the same
+program IDs as the deployed verifier contracts. The build mode is
+selected by the `REPRODUCIBLE_BUILD` environment variable, parsed at
+`build.rs` time:
+
+| Mode | When to use | Toolchain required |
+|------|-------------|--------------------|
+| `prebuilt` (unset / empty) | Default. Consumes the committed ELFs as-is. Fast, no zkVM toolchain needed. | Rust only |
+| `docker` | Reproducibly rebuild the ELFs inside a container and overwrite the committed copies. | Rust + Docker + `sp1up` / `rzup` |
+| anything else (e.g. `disable`) | Local non-reproducible rebuild for iteration; program IDs will drift. | Rust + `sp1up` / `rzup` |
+
+```bash
+# Default: use committed ELFs
+$ cargo build
+
+# Reproducibly rebuild inside Docker (this is what CI verifies)
+$ REPRODUCIBLE_BUILD=docker cargo build -p sp1-methods -p risc0-methods
+
+# Local iteration build (NOT reproducible)
+$ REPRODUCIBLE_BUILD=disable cargo build
+```
+
+When the binary is launched without a reproducible build, the CLI prints
+a stderr warning banner.
+
+A GitHub Actions workflow (`.github/workflows/verify-elf.yml`) rebuilds
+both ELFs in docker on every PR and fails if the committed binaries drift.
+
 ### Building Smart Contracts
 
 We use [Foundry](https://getfoundry.sh/) for smart contract development. If you don't have it installed, please follow the [installation guide](https://getfoundry.sh/introduction/installation).
@@ -331,8 +391,10 @@ $ forge build
      ├── nitro-attest-cli/  # CLI application
      ├── prover/            # Proof generation logic
      ├── verifier/          # Verification utilities
-     ├── risc0-methods/     # RISC0-specific methods
-     └── sp1-methods/       # SP1-specific methods
+     ├── risc0-methods/     # RISC0-specific zkVM methods
+     ├── sp1-methods/       # SP1-specific zkVM methods
+     ├── pico-methods/      # Pico-specific zkVM methods
+     └── x509-verifier-rust-crypto/ # X509 certificate verification
 ```
 
 ## Performance Benchmarks
@@ -375,16 +437,7 @@ The following table shows how certificate caching reduces computational overhead
 
 The following table shows the additional cycles used for aggregation.
 
-#### Risc0
-| Aggregated Reports | Proving Cycles | Proving Cycles per Report | Cycles Improvement |
-| ------------------ | -------------- | ------------------------- | ------------------ |
-| 1                  | 131,072        | 131,072                   | Baseline           |
-| 2                  | 131,072        | 65,536                    | 50.0% reduction    |
-| 5                  | 262,144        | 52,428.8                  | 60.0% reduction    |
-| 10                 | 524,288        | 52,428.8                  | 60.0% reduction    |
-| 100                | 3,407,872      | 34,078.7                  | 74.0% reduction    |
-
-#### Succinct
+#### Succinct (SP1)
 | Aggregated Reports | Proving Cycles | Proving Cycles per Report | Cycles Improvement |
 | ------------------ | -------------- | ------------------------- | ------------------ |
 | 1                  | 1,368,769      | 1,368,769                 | Baseline           |
@@ -392,6 +445,14 @@ The following table shows the additional cycles used for aggregation.
 | 5                  | 2,884,700      | 576,940                   | 57.8% reduction    |
 | 10                 | 4,830,986      | 483,098                   | 64.7% reduction    |
 | 100                | 34,680,156     | 346,801                   | 74.7% reduction    |
+
+> [!NOTE]
+> **RISC0 (Boundless) Aggregation Costs**
+>
+> Unlike SP1 which uses efficient recursion circuits to verify child proofs as "assumptions", Boundless executes full Groth16 proof verification internally within the zkVM. This approach incurs approximately **200+ million cycles per additional proof** verified, meaning aggregation costs scale linearly rather than amortizing.
+>
+> Before using proof aggregation with Boundless, users should compare the additional proving cycle costs against the gas savings from batching on-chain verifications. In many cases, submitting individual Groth16 proofs for on-chain verification may be more cost-effective than paying for the expensive in-zkVM proof verification.
+
 </details>
 
 <details>
@@ -429,20 +490,39 @@ Batch verification provides significant gas savings compared to individual verif
 NETWORK_PRIVATE_KEY environment variable is not set. Please set it to your private key or use the .private_key() method.
 ```
 
-**RISC0 Bonsai Key Missing:**
+**RISC0 Boundless Key Missing:**
 ```
-missing BONSAI_API_KEY env var
+missing BOUNDLESS_PRIVATE_KEY
 ```
 
 **Solution:**
-- For SP1 remote proving: Set `SP1_PRIVATE_KEY` environment variable with your SP1 network private key
-- For RISC0 remote proving: Set `BONSAI_API_KEY` environment variable with your Bonsai API key
+- For SP1 remote proving: Set `NETWORK_PRIVATE_KEY` environment variable with your SP1 network private key
+- For RISC0 remote proving via Boundless: Set the following environment variables:
+  - `BOUNDLESS_RPC_URL` — Boundless network RPC URL
+  - `BOUNDLESS_PRIVATE_KEY` — Your wallet private key (hex-encoded)
+  - Exactly one storage uploader:
+    - `PINATA_JWT` (+ optional `PINATA_API_URL`, `IPFS_GATEWAY_URL`) for IPFS via Pinata, or
+    - `FILE_PATH` for the local-file uploader (useful for offline / dev setups)
+
+    See also the upstream [Boundless storage providers](https://docs.boundless.network/developers/tutorials/request#storage-providers) docs.
 - For local testing without remote proving: Set `DEV_MODE=true` to generate development proofs
 
 ```bash
-# For production remote proving
-export SP1_PRIVATE_KEY=your_sp1_private_key
-export BONSAI_API_KEY=your_bonsai_api_key
+# For SP1 production remote proving
+export NETWORK_PRIVATE_KEY=your_sp1_network_private_key
+
+# For RISC0 production remote proving (via Boundless)
+export BOUNDLESS_RPC_URL=https://rpc.boundless.xyz
+export BOUNDLESS_PRIVATE_KEY=your_wallet_private_key
+export PINATA_JWT=your_pinata_jwt           # or FILE_PATH=/path/to/local/store
+
+# Optional Boundless configuration
+export BOUNDLESS_VERIFIER_PROGRAM_URL=ipfs://...   # Pre-uploaded verifier ELF URL
+export BOUNDLESS_AGGREGATOR_PROGRAM_URL=ipfs://... # Pre-uploaded aggregator ELF URL
+export BOUNDLESS_MIN_PRICE=100000                  # Min price in wei per cycle
+export BOUNDLESS_MAX_PRICE=1000000                 # Max price in wei per cycle
+export BOUNDLESS_TIMEOUT=3600                      # Timeout in seconds
+export BOUNDLESS_RAMP_UP_PERIOD=300                # Ramp-up period in seconds
 
 # For development/testing
 export DEV_MODE=true

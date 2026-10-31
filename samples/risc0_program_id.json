@@ -1,8 +1,8 @@
 {
   "program_id": {
-    "aggregator_id": "0xb5bb99768a18b5ba530ef4f7c13fc8f5130c1ed20db8190d11d8ab1f5f4d9dc5",
-    "verifier_id": "0xb01c0174aed6bd02aecec2671739e004503f6482f4e7298e71129f9e0aea309e",
-    "verifier_proof_id": "0xb01c0174aed6bd02aecec2671739e004503f6482f4e7298e71129f9e0aea309e"
+    "aggregator_id": "0x3b2a92fbc8ed23754da30eeaa6bfd72c6ee1ed7485a62d11c358092aa2ce91a7",
+    "verifier_id": "0x933285e8d3076b68cd7b59e611924a9aa2a0b836033213f5f6527b3fbd8897b4",
+    "verifier_proof_id": "0x933285e8d3076b68cd7b59e611924a9aa2a0b836033213f5f6527b3fbd8897b4"
   },
   "zktype": "RiscZero"
 }
